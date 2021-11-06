@@ -1,0 +1,21 @@
+# Defaults
+**/.thumbs.db
+**/.DS_Store
+**/.gitkeep
+**/.gitignore
+
+# Local env files
+**/.env
+**/.env.local
+**/.env.*.local
+**/__pycache__
+**/.venv
+
+# Editor directories and files
+**/.vscode
+**/.idea
+**/*.suo
+**/*.ntvs*
+**/*.njsproj
+**/*.sln
+**/*.sw?

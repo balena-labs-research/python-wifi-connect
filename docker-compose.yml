@@ -1,0 +1,17 @@
+version: '2.1'
+
+services:
+  balena-py-wifi-connect:
+    environment:
+      HOTSPOT_SSID: "Py Wi-Fi Connect"
+      #HOTSPOT_PASSWORD: "my-hotspot-password" # Hotspot passwords must be 8 characters or more.
+      DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/host/run/dbus/system_bus_socket"
+    build:
+      context: .
+      dockerfile: Dockerfile.template
+    restart: always
+    network_mode: "host"
+    labels:
+      io.balena.features.dbus: '1'
+    cap_add:
+      - NET_ADMIN
