@@ -61,18 +61,17 @@ def connect(conn_type=config.type_hotspot,
         logger.info(f"Added connection of type {conn_type}")
 
         # Find this connection and its device
-        connections = NetworkManager.Settings.ListConnections()
-        connections = dict([(x.GetSettings()['connection']['id'], x)
-                            for x in connections])
+        connections = \
+            dict([(x.GetSettings()['connection']['id'], x)
+                 for x in NetworkManager.Settings.ListConnections()])
         conn = connections[config.ap_name]
 
         # Find a suitable device
         ctype = conn.GetSettings()['connection']['type']
         dtype = {'802-11-wireless': NetworkManager.NM_DEVICE_TYPE_WIFI} \
             .get(ctype, ctype)
-        devices = NetworkManager.NetworkManager.GetDevices()
 
-        for dev in devices:
+        for dev in NetworkManager.NetworkManager.GetDevices():
             if dev.DeviceType == dtype:
                 break
         else:
