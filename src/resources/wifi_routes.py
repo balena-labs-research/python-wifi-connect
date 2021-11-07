@@ -12,6 +12,10 @@ class wifi_connect(Resource):
     def post(self):
         content = request.get_json()
 
+        # If the device is already connected to a wifi network
+        if check_wifi_status():
+            return {'message': 'Device is already connected.'}, 409
+
         # Check for any missing strings
         if "conn_type" not in content or "ssid" not in content:
             return {'message': 'Type or SSID not specified'}, 400
@@ -40,7 +44,7 @@ class wifi_connection_status(Resource):
 
 class wifi_forget(Resource):
     def get(self):
-        # If the device is already connected to a wifi network
+        # If the device is not connected to a wifi network
         if not check_wifi_status():
             return {'message': 'Device is already disconnected.'}, 409
 
