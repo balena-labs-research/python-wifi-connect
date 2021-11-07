@@ -6,6 +6,7 @@ import time
 from common.errors import logger
 from common.errors import WifiConnectionFailed
 from common.errors import WifiHotspotStartFailed
+from common.errors import WifiNetworkManagerError
 from common.errors import WifiNoSuitableDevice
 from common.nm_dicts import get_nm_dict
 
@@ -13,6 +14,37 @@ from common.nm_dicts import get_nm_dict
 # Import DBus mainloop for NetworkManager use
 from dbus.mainloop.glib import DBusGMainLoop
 DBusGMainLoop(set_as_default=True)
+
+
+def analyse_access_point(ap):
+    security = config.type_none
+
+    # Based on a subset of the AP_SEC flag settings
+    # (https://developer.gnome.org/NetworkManager/1.2/nm-dbus-types.html#NM80211ApSecurityFlags)
+    # to determine which type of security this AP uses.
+    AP_SEC = NetworkManager.NM_802_11_AP_SEC_NONE
+    if ap.Flags & NetworkManager.NM_802_11_AP_FLAGS_PRIVACY and \
+            ap.WpaFlags == AP_SEC and \
+            ap.RsnFlags == AP_SEC:
+        security = config.type_wep
+
+    if ap.WpaFlags != AP_SEC:
+        security = config.type_wpa
+
+    if ap.RsnFlags != AP_SEC:
+        security = config.type_wpa2
+
+    if ap.WpaFlags & \
+        NetworkManager.NM_802_11_AP_SEC_KEY_MGMT_802_1X or \
+            ap.RsnFlags & \
+            NetworkManager.NM_802_11_AP_SEC_KEY_MGMT_802_1X:
+        security = config.type_enterprise
+
+    entry = {"ssid": ap.Ssid,
+             "conn_type": security,
+             "strength": int(ap.Strength)}
+
+    return entry
 
 
 def check_internet_status(host="8.8.8.8", port=53, timeout=5):
@@ -53,10 +85,10 @@ def connect(conn_type=config.type_hotspot,
     if conn_type == config.type_hotspot and config.hotspot_password:
         password = config.hotspot_password
 
-    try:
-        # Get the correct config based on type requested
-        conn_dict = get_nm_dict(conn_type, ssid, username, password)
+    # Get the correct config based on type requested
+    conn_dict = get_nm_dict(conn_type, ssid, username, password)
 
+    try:
         NetworkManager.Settings.AddConnection(conn_dict)
         logger.info(f"Added connection of type {conn_type}")
 
@@ -66,16 +98,14 @@ def connect(conn_type=config.type_hotspot,
                  for x in NetworkManager.Settings.ListConnections()])
         conn = connections[config.ap_name]
 
-        # Find a suitable device
-        ctype = conn.GetSettings()['connection']['type']
-        dtype = {'802-11-wireless': NetworkManager.NM_DEVICE_TYPE_WIFI} \
-            .get(ctype, ctype)
+        # Save the wi-fi device object to a variable
+        devices = dict([(x.DeviceType, x)
+                        for x in NetworkManager.NetworkManager.GetDevices()])
 
-        for dev in NetworkManager.NetworkManager.GetDevices():
-            if dev.DeviceType == dtype:
-                break
+        if NetworkManager.NM_DEVICE_TYPE_WIFI in devices:
+            dev = devices[NetworkManager.NM_DEVICE_TYPE_WIFI]
         else:
-            logger.error(f"No suitable and available {ctype} device found")
+            logger.error("No suitable and available device found")
             raise WifiNoSuitableDevice
 
         # Connect
@@ -128,7 +158,7 @@ def forget(create_new_hotspot=False):
 
     except Exception:
         logger.exception("Failed to delete network.")
-        return False
+        raise WifiNetworkManagerError
 
     return True
 
@@ -139,56 +169,40 @@ def list_access_points():
     # button will be disabled.
     iw_status = refresh_networks(retries=1)
 
-    ssids = []  # List to be returned
+    try:
+        # Fetch dictionary of devices
+        devices = dict([(x.DeviceType, x)
+                        for x in NetworkManager.NetworkManager.GetDevices()])
 
-    for dev in NetworkManager.NetworkManager.GetDevices():
-        if dev.DeviceType != NetworkManager.NM_DEVICE_TYPE_WIFI:
-            continue
-        for ap in dev.GetAccessPoints():
-            security = config.type_none
+        # Save the wi-fi device object to a variable
+        if NetworkManager.NM_DEVICE_TYPE_WIFI in devices:
+            dev = devices[NetworkManager.NM_DEVICE_TYPE_WIFI]
+        else:
+            logger.error("No suitable and available device found")
+            raise WifiNoSuitableDevice
 
-            # Based on a subset of the AP_SEC flag settings
-            # (https://developer.gnome.org/NetworkManager/1.2/nm-dbus-types.html#NM80211ApSecurityFlags)
-            # determine which type of security this AP uses.
-            AP_SEC = NetworkManager.NM_802_11_AP_SEC_NONE
-            if ap.Flags & NetworkManager.NM_802_11_AP_FLAGS_PRIVACY and \
-                    ap.WpaFlags == AP_SEC and \
-                    ap.RsnFlags == AP_SEC:
-                security = config.type_wep
+        # For each wi-fi connection in range, identify it's details
+        compiled_ssids = [analyse_access_point(ap)
+                          for ap in dev.GetAccessPoints()]
+    except Exception:
+        logger.exception('Failed listing access points.')
+        raise WifiNetworkManagerError
 
-            if ap.WpaFlags != AP_SEC:
-                security = config.type_wpa
+    # Sort SSIDs by signal strength
+    compiled_ssids = sorted(compiled_ssids,
+                            key=lambda x: x['strength'],
+                            reverse=True)
 
-            if ap.RsnFlags != AP_SEC:
-                security = config.type_wpa2
-
-            if ap.WpaFlags & \
-                NetworkManager.NM_802_11_AP_SEC_KEY_MGMT_802_1X or \
-                    ap.RsnFlags & \
-                    NetworkManager.NM_802_11_AP_SEC_KEY_MGMT_802_1X:
-                security = config.type_enterprise
-
-            entry = {"ssid": ap.Ssid,
-                     "conn_type": security,
-                     "strength": int(ap.Strength)}
-
-            # Do not add duplicates to the list
-            if ssids.__contains__(entry):
-                continue
-
-            # Do not add own hotspot to the list
-            if ap.Ssid == config.hotspot_ssid:
-                continue
-
-            ssids.append(entry)
-
-        # Sort SSIDs by signal strength
-        ssids = sorted(ssids,
-                       key=lambda x: x['strength'],
-                       reverse=True)
+    # Remove duplicates and own hotspot from list.
+    tmp = []
+    ssids = []
+    for item in compiled_ssids:
+        if item['ssid'] not in tmp and item['ssid'] != config.hotspot_ssid:
+            ssids.append(item)
+        tmp.append(item['ssid'])
 
     # Return a list of available SSIDs and their security type,
-    # or [] for none available or error.
+    # or [] for none available.
     return ssids, iw_status
 
 

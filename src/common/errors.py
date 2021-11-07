@@ -28,6 +28,10 @@ class WifiInvalidConnectionType(Exception):
     pass
 
 
+class WifiNetworkManagerError(Exception):
+    pass
+
+
 class WifiNoSuitableDevice(Exception):
     pass
 
@@ -44,6 +48,10 @@ errors = {
      },
     "WifiInvalidConnectionType": {
          "message": "Invalid connection type.",
+         "status": 500
+     },
+    "WifiNetworkManagerError": {
+         "message": "Failed communicating with Network Manager.",
          "status": 500
      },
     "WifiNoSuitableDevice": {
