@@ -6,7 +6,8 @@ from common.errors import errors
 from common.errors import logger
 from common.wifi import check_wifi_status
 from common.wifi import dnsmasq
-from common.wifi import start_hotspot
+from common.wifi import connect
+from common.wifi import refresh_networks
 from resources.system_routes import system_health_check
 from resources.wifi_routes import wifi_connect
 from resources.wifi_routes import wifi_connection_status
@@ -49,7 +50,8 @@ if __name__ == '__main__':
         logger.info('Wi-Fi connection already established.')
     else:
         logger.info('Starting hotspot...')
-        start_hotspot()
+        refresh_networks(retries=1)
+        connect()
 
     # Configure endpoints #
 

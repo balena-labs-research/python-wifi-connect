@@ -178,7 +178,7 @@ def connect(conn_type=config.type_hotspot,
         elif conn_type != config.type_hotspot:
             # Restart hotspot as connection failed
             logger.warning("Connection attempt failed.")
-            start_hotspot()
+            connect()
         else:
             raise WifiHotspotStartFailed
     except Exception:
@@ -187,7 +187,7 @@ def connect(conn_type=config.type_hotspot,
         if conn_type == config.type_hotspot:
             raise WifiHotspotStartFailed
         else:
-            start_hotspot()  # Restart hotspot as connection failed
+            connect()  # Restart hotspot as connection failed
             raise WifiConnectionFailed
 
 
@@ -224,7 +224,8 @@ def forget(create_new_hotspot=False):
             conn.Delete()
 
         if create_new_hotspot:
-            start_hotspot()
+            refresh_networks()
+            connect()
 
     except Exception:
         logger.exception("Failed to delete network.")
@@ -321,12 +322,3 @@ def refresh_networks(retries=5):
     logger.warning("IW is not accessible. This can happen on some devices "
                    "and is usually nothing to worry about.")
     return False
-
-
-def start_hotspot():
-    # On some devices, fetching available wifi networks in the area is only
-    # possible before the hotspot is started and therefore called here.
-    refresh_networks()
-
-    # Start the connection
-    return connect()
