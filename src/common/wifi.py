@@ -223,9 +223,6 @@ def forget(create_new_hotspot=False):
             conn = connections[config.ap_name]
             conn.Delete()
 
-            # Ensure NetworkManager is ready before starting new hotspot
-            time.sleep(5)
-
         if create_new_hotspot:
             start_hotspot()
 
@@ -240,7 +237,7 @@ def list_access_points():
     # Run IW to reduce chance of empty SSID list. Storing result
     # to return so that if IW does not work on this device the refresh
     # button will be disabled.
-    iw_status = refresh_networks()
+    iw_status = refresh_networks(retries=1)
 
     ssids = []  # List to be returned
 
@@ -295,23 +292,35 @@ def list_access_points():
     return ssids, iw_status
 
 
-def refresh_networks():
-    try:
-        # Refresh networks list using IW which has proven
-        # to be better at refreshing than nmcli. Some devices
-        # do not support this feature while the AP is active
-        # and therefore returns a boolean with status of request
-        subprocess.check_output(
-            ["iw", "dev", "wlan0", "scan"])
-        return True
-    except subprocess.CalledProcessError:
-        # Note, on occasion the wifi dbus is busy and returns false.
-        logger.warning("IW is not accessible. This can happen on some devices "
-                       "and is usually nothing to worry about.")
-        return False
-    except Exception:
-        logger.exception("Unknown error refreshing networks.")
-        return False
+def refresh_networks(retries=5):
+    # Refreshing networks list using IW which has proven
+    # to be better at refreshing than nmcli. Some devices
+    # do not support this feature while the AP is active
+    # and therefore returns a boolean with status of request.
+
+    # After forget has run, NetworkManager takes a while to release
+    # the Wi-Fi for iw to use it, hence the retries.
+    max_runs = retries
+    run = 0
+    while run < max_runs:
+        try:
+            time.sleep(3)
+            subprocess.check_output(["iw", "dev", "wlan0", "scan"])
+        except subprocess.CalledProcessError:
+            logger.warning('Resource busy. Retrying...')
+            continue
+        except Exception:
+            logger.error('Unknown error calling IW.')
+            return False
+        else:
+            logger.info('IW succeeded.')
+            return True
+        finally:
+            run += 1
+
+    logger.warning("IW is not accessible. This can happen on some devices "
+                   "and is usually nothing to worry about.")
+    return False
 
 
 def start_hotspot():

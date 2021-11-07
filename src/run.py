@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Start dnsmasq service for assigning IPs to connected devices
     dnsmasq()
 
-    # Start hotspot if no wi-fi connection after delay
+    # Allow time for an exsiting saved Wi-Fi connection to connect.
     time.sleep(10)
 
     # If the Wi-Fi connection is not already active, start a hotspot

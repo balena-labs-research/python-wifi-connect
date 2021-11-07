@@ -31,6 +31,7 @@ Connect to a nearby Wi-Fi access point.
 ````
 
 #### Response status 202
+Requests are returned immediately and then the process is executed. Otherwise users would be disconnected before they were able to receive the returned response. 
 ````
 {
     "message": "accepted"
@@ -56,6 +57,7 @@ Disconnect from the access point you earlier connected to with this app and forg
 #### GET
 
 #### Response status 202
+Requests are returned immediately and then the process is executed. Otherwise users would be disconnected before they were able to receive the returned response. 
 ````
 {
     "message": "accepted"
