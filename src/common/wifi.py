@@ -3,12 +3,11 @@ import NetworkManager
 import socket
 import subprocess
 import time
-import uuid
 from common.errors import logger
 from common.errors import WifiConnectionFailed
 from common.errors import WifiHotspotStartFailed
-from common.errors import WifiInvalidConnectionType
 from common.errors import WifiNoSuitableDevice
+from common.nm_dicts import get_nm_dict
 
 
 # Import DBus mainloop for NetworkManager use
@@ -55,86 +54,8 @@ def connect(conn_type=config.type_hotspot,
         password = config.hotspot_password
 
     try:
-        # Hotspot for user to connect to device
-        hotspot_dict = {
-            '802-11-wireless': {'band': 'bg',
-                                'mode': 'ap',
-                                'ssid': config.hotspot_ssid},
-            'connection': {'autoconnect': False,
-                           'id': config.ap_name,
-                           'interface-name': 'wlan0',
-                           'type': '802-11-wireless',
-                           'uuid': str(uuid.uuid4())},
-            'ipv4': {'address-data':
-                     [{'address': '192.168.42.1', 'prefix': 24}],
-                     'addresses': [['192.168.42.1', 24, '0.0.0.0']],
-                     'method': 'manual'},
-            'ipv6': {'method': 'auto'}
-        }
-
-        # Include a key-mgmt string in hotspot if setting a password
-        if password:
-            password_key_mgmt = {'802-11-wireless-security':
-                                 {'key-mgmt': 'wpa-psk', 'psk': password}}
-
-            hotspot_dict.update(password_key_mgmt)
-
-        # "MIT SECURE" network.
-        enterprise_dict = {
-            '802-11-wireless': {'mode': 'infrastructure',
-                                'security': '802-11-wireless-security',
-                                'ssid': ssid},
-            '802-11-wireless-security':
-                {'auth-alg': 'open', 'key-mgmt': 'wpa-eap'},
-            '802-1x': {'eap': ['peap'],
-                       'identity': username,
-                       'password': password,
-                       'phase2-auth': 'mschapv2'},
-            'connection': {'id': config.ap_name,
-                           'type': '802-11-wireless',
-                           'uuid': str(uuid.uuid4())},
-            'ipv4': {'method': 'auto'},
-            'ipv6': {'method': 'auto'}
-        }
-
-        # No auth/'open' connection.
-        no_auth_dict = {
-            '802-11-wireless': {'mode': 'infrastructure',
-                                'ssid': ssid},
-            'connection': {'id': config.ap_name,
-                           'type': '802-11-wireless',
-                           'uuid': str(uuid.uuid4())},
-            'ipv4': {'method': 'auto'},
-            'ipv6': {'method': 'auto'}
-        }
-
-        # Hidden, WEP, WPA, WPA2, password required.
-        passwd_dict = {
-            '802-11-wireless': {'mode': 'infrastructure',
-                                'security': '802-11-wireless-security',
-                                'ssid': ssid},
-            '802-11-wireless-security':
-                {'key-mgmt': 'wpa-psk', 'psk': password},
-            'connection': {'id': config.ap_name,
-                           'type': '802-11-wireless',
-                           'uuid': str(uuid.uuid4())},
-            'ipv4': {'method': 'auto'},
-            'ipv6': {'method': 'auto'}
-        }
-
-        if conn_type == config.type_hotspot:
-            conn_dict = hotspot_dict
-        elif conn_type == config.type_none:
-            conn_dict = no_auth_dict
-        elif (conn_type == config.type_wep or
-                conn_type == config.type_wpa or
-                conn_type == config.type_wpa2):
-            conn_dict = passwd_dict
-        elif conn_type == config.type_enterprise:
-            conn_dict = enterprise_dict
-        else:
-            logger.error("Invalid conn_type.")
-            raise WifiInvalidConnectionType
+        # Get the correct config based on type requested
+        conn_dict = get_nm_dict(conn_type, ssid, username, password)
 
         NetworkManager.Settings.AddConnection(conn_dict)
         logger.info(f"Added connection of type {conn_type}")
@@ -189,27 +110,6 @@ def connect(conn_type=config.type_hotspot,
         else:
             connect()  # Restart hotspot as connection failed
             raise WifiConnectionFailed
-
-
-def dnsmasq():
-    # Build the list of args
-    path = "/usr/sbin/dnsmasq"
-    args = [path]
-    args.append(f"--address=/#/{config.DEFAULT_GATEWAY}")
-    args.append(f"--dhcp-range={config.DEFAULT_DHCP_RANGE}")
-    args.append(f"--dhcp-option=option:router,{config.DEFAULT_GATEWAY}")
-    args.append(f"--interface={config.DEFAULT_INTERFACE}")
-    args.append("--keep-in-foreground")
-    args.append("--bind-dynamic")
-    args.append("--except-interface=lo")
-    args.append("--conf-file")
-    args.append("--no-hosts")
-
-    try:
-        subprocess.Popen(args)
-    except Exception:
-        logger.exception('Failed to start dnsmasq.')
-        # Allow pass to facilitate software updates
 
 
 def forget(create_new_hotspot=False):

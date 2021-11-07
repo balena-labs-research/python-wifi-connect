@@ -4,8 +4,8 @@ import sys
 import time
 from common.errors import errors
 from common.errors import logger
+from common.system import dnsmasq
 from common.wifi import check_wifi_status
-from common.wifi import dnsmasq
 from common.wifi import connect
 from common.wifi import refresh_networks
 from resources.system_routes import system_health_check
