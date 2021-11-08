@@ -65,8 +65,16 @@ Check whether your device is connected to a Wi-Fi hotspot and whether there is i
 
 ### http://your-device:9090/v1/forget
 
-Disconnect from the access point you earlier connected to with this app and forget the connection so it will not automatically reconnect on next launch of your device.
-#### GET
+Disconnect from an access point and forget the connection so it will not automatically reconnect on next launch of your device.
+
+When passing `"all_networks": false` this endpoint will only touch Wi-Fi connections set up using this app. If you pass `"all_networks": true` it will remove all Wi-Fi connections from the device. This is useful if you have set up a Wi-Fi connection with another app and need to clear out connections to allow Py-WiFi-Connect to manage connections. 
+
+#### POST
+````
+{
+    "all_networks": false
+}
+````
 
 #### Response status 202
 Requests are returned immediately and then the process is executed. Otherwise users would be disconnected before they were able to receive the returned response. 

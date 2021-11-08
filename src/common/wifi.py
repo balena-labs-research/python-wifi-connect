@@ -110,7 +110,6 @@ def connect(conn_type=config.type_hotspot,
 
         # Connect
         NetworkManager.NetworkManager.ActivateConnection(conn, dev, "/")
-        logger.info("Activated connection.")
 
         # Wait for ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
         logger.info("Waiting for connection to become active...")
@@ -122,7 +121,7 @@ def connect(conn_type=config.type_hotspot,
                 break
 
         if dev.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED:
-            logger.info("Connection is live.")
+            logger.info("Connected.")
             return True
         # If the current attempt is not already a hotspot attempt
         elif conn_type != config.type_hotspot:
@@ -141,16 +140,26 @@ def connect(conn_type=config.type_hotspot,
             raise WifiConnectionFailed
 
 
-def forget(create_new_hotspot=False):
+def forget(create_new_hotspot=False, all_networks=False):
     # Find and delete the hotspot connection
     try:
         connections = NetworkManager.Settings.ListConnections()
-        connections = dict([(x.GetSettings()['connection']['id'], x)
-                            for x in connections])
 
-        if config.ap_name in connections:
-            conn = connections[config.ap_name]
-            conn.Delete()
+        if all_networks:
+            for connection in connections:
+                if connection.GetSettings()["connection"]["type"] \
+                        == "802-11-wireless":
+                    # Delete the identified connection
+                    network_id = connection.GetSettings()["connection"]["id"]
+                    connection.Delete()
+                    logger.info(f"Deleted connection: {network_id}")
+        else:
+            connection_ids = \
+                dict([(x.GetSettings()['connection']['id'], x)
+                     for x in connections])
+            if config.ap_name in connection_ids:
+                connection_ids[config.ap_name].Delete()
+                logger.info(f"Deleted connection: {config.ap_name}")
 
         if create_new_hotspot:
             refresh_networks()

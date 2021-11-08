@@ -43,16 +43,26 @@ class wifi_connection_status(Resource):
 
 
 class wifi_forget(Resource):
-    def get(self):
+    def post(self):
         # If the device is not connected to a wifi network
         if not check_wifi_status():
             return {'message': 'Device is already disconnected.'}, 409
+
+        # Check the all_networks boolean is valid
+        if (not request.get_json() or
+            'all_networks' not in request.get_json()
+                or type(request.get_json()['all_networks']) is not bool):
+            return {'message': "all_networks boolean missing or is not "
+                               "a boolean."}, 202
 
         # Use threading so the response can be returned before the user is
         # disconnected.
         wifi_forget_thread = threading.Thread(target=forget,
                                               kwargs={'create_new_hotspot':
-                                                      True})
+                                                      True,
+                                                      'all_networks':
+                                                      request.get_json()
+                                                      ['all_networks']})
 
         wifi_forget_thread.start()
 
