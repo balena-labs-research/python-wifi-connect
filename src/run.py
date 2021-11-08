@@ -58,7 +58,7 @@ if __name__ == '__main__':
     # Configure endpoints #
 
     # Health check
-    api.add_resource(system_health_check, '/')
+    api.add_resource(system_health_check, '/healthcheck')
 
     # Wi-Fi
     api.add_resource(wifi_connect, '/v1/connect')

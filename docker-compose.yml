@@ -11,8 +11,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.template
-    restart: always
     network_mode: "host"
+    restart: always
     labels:
       io.balena.features.dbus: '1'
     cap_add:
