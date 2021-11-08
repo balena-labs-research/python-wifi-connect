@@ -8,6 +8,8 @@ from common.system import dnsmasq
 from common.wifi import check_wifi_status
 from common.wifi import connect
 from common.wifi import refresh_networks
+from config import host
+from config import port
 from resources.system_routes import system_health_check
 from resources.wifi_routes import wifi_connect
 from resources.wifi_routes import wifi_connection_status
@@ -67,4 +69,4 @@ if __name__ == '__main__':
     # Initialise and start
     api.init_app(app)
 
-    app.run(port=9090, host='0.0.0.0')
+    app.run(port=port, host=host)

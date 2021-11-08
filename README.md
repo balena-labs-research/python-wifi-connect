@@ -15,19 +15,15 @@ Enjoy and please do feel free to feedback experiences and issues.
 
 ## Securing the API
 
-By default, the API is exposed so your interface can interact directly. In other words, anyone can go to `http://your-device:9090/v1/connect` to send commands to your device. If you would prefer to only allow access from your backend, change the following line in run.py:
+By default, the API is exposed so your interface can interact directly. In other words, anyone can go to `http://your-device:9090/v1/connect` to send commands to your device. 
 
-```diff
-- app.run(port=9090, host='0.0.0.0')
-+ app.run(port=9090, host='127.0.0.1')
-```
-
-Then ensure your backend container is connected to the host network so it matches the API docker-compose.yml file in this repo:
+If you would prefer to only allow access from your backend, change the `host` environment variable to `127.0.0.1`. Then ensure your backend container is connected to the host network so it matches the API docker-compose.yml file in this repo:
 
 `network_mode: "host"`
 
 Users will then be unable to access the API `http://your-device:9090/v1/connect`. Your backend container on the device, however, can reach the API using `http://127.0.0.1:9090/v1/connect`. This is useful if your interface has a login process, and you only want users to be able to interact with Wi-Fi after logging in.
 
+Alternatively, if you would rather have your backend use specified ports instead of the host network, you can change the `host` environment variable to `172.17.0.1` and access the API from `http://172.17.0.1:9090/v1/connect`.
 
 
 ## Endpoints

@@ -1,10 +1,12 @@
 version: '2.1'
 
 services:
-  balena-py-wifi-connect:
+  py-wifi-connect:
     environment:
       HOTSPOT_SSID: "Py Wi-Fi Connect"
       #HOTSPOT_PASSWORD: "my-hotspot-password" # Hotspot passwords must be 8 characters or more.
+      HOST: "0.0.0.0"
+      PORT: 9090
       DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/host/run/dbus/system_bus_socket"
     build:
       context: .

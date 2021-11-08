@@ -12,6 +12,18 @@ if "HOTSPOT_PASSWORD" in os.environ:
 else:
     hotspot_password = None
 
+# Set default host.
+if "HOST" in os.environ:
+    host = os.environ['HOST']
+else:
+    host = '0.0.0.0'
+
+# Set default port.
+if "PORT" in os.environ:
+    port = os.environ['PORT']
+else:
+    port = 9090
+
 # Default access point name. No need to change these under usual operation as
 # they are for use inside the app only. PWC is acronym for 'Py Wi-Fi Connect'.
 ap_name = 'PWC'
