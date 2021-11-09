@@ -12,7 +12,7 @@ You can set your own default Wi-Fi SSID and a Wi-Fi password for your hotspot us
 
 Enjoy and please do feel free to feedback experiences and issues.
 
-## Automatic connections
+## Automatic connections
 You can specify a Wi-Fi connection you would like your device to try and connect to the first time it loads by using the environment variables in the docker-compose.yml file. Once this connection is established, the device will stay connected after reboots until you use the `forget` endpoint. If the network is not available, the hotspot will start instead.
 
 ````
