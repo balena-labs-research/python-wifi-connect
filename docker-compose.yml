@@ -16,7 +16,7 @@ services:
       #USERNAME: "username" # Optional
       #PWC_PASSWORD: "your-password" # Optional. Must be 8 characters or more. 
 
-      ## System Variables ##
+      ## Required System Variables ##
       DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/host/run/dbus/system_bus_socket"
     build:
       context: .

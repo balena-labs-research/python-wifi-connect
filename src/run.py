@@ -1,7 +1,4 @@
-import atexit
 import config
-import signal
-import sys
 import time
 from common.errors import errors
 from common.errors import logger
@@ -19,30 +16,27 @@ from resources.wifi_routes import wifi_forget
 from resources.wifi_routes import wifi_list_access_points
 from flask import Flask
 from flask_restful import Api
+from waitress import serve
 
 
-def handle_exit(*args):
-    logger.info('Finshed the exit process.')
+# Create Flask app instance
+app = Flask(__name__)
 
+# Load Flask-Restful API
+api = Api(app, errors=errors)
 
-def handle_sigterm(*args):
-    sys.exit(0)
+# Health check routes
+api.add_resource(system_health_check, '/healthcheck')
 
+# Wi-Fi routes
+api.add_resource(wifi_connect, '/v1/connect')
+api.add_resource(wifi_connection_status, '/v1/connection_status')
+api.add_resource(wifi_forget, '/v1/forget')
+api.add_resource(wifi_list_access_points, '/v1/list_access_points')
 
-# Startup process
 if __name__ == '__main__':
-    logger.info('Starting...')
-    # Load Flask-Restful API
-    api = Api(errors=errors)
-
-    # Create Flask app instance
-    app = Flask(__name__)
-
-    # Ensure soft shutdown to terminate wifi-connect
-    atexit.register(handle_exit, None, None)
-    signal.signal(signal.SIGHUP, handle_sigterm)
-    signal.signal(signal.SIGINT, handle_sigterm)
-    signal.signal(signal.SIGTERM, handle_sigterm)
+    # Begin loading program
+    logger.info('Checking for previously configured Wi-Fi connections...')
 
     # Start dnsmasq service for assigning IPs to connected devices
     dnsmasq()
@@ -53,6 +47,7 @@ if __name__ == '__main__':
     # If the Wi-Fi connection is not already active, start a hotspot
     if check_wifi_status():
         logger.info('Wi-Fi connection already established.')
+        logger.info('Ready...')
     else:
         refresh_networks(retries=1)
         if config.auto_connect_kargs:
@@ -62,18 +57,4 @@ if __name__ == '__main__':
             logger.info('Starting hotspot...')
             connect()
 
-    # Configure endpoints #
-
-    # Health check
-    api.add_resource(system_health_check, '/healthcheck')
-
-    # Wi-Fi
-    api.add_resource(wifi_connect, '/v1/connect')
-    api.add_resource(wifi_connection_status, '/v1/connection_status')
-    api.add_resource(wifi_forget, '/v1/forget')
-    api.add_resource(wifi_list_access_points, '/v1/list_access_points')
-
-    # Initialise and start
-    api.init_app(app)
-
-    app.run(port=port, host=host)
+    serve(app, host=host, port=port)

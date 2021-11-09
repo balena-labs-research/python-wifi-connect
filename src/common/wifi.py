@@ -61,7 +61,7 @@ def auto_connect(ssid=None,
             break
     else:
         logger.info('Auto-connect failed as the device could not find the '
-                    'specified network.')
+                    'specified network. Starting hotspot instead...')
         connect()
 
 
@@ -108,7 +108,7 @@ def connect(conn_type=config.type_hotspot,
 
     try:
         NetworkManager.Settings.AddConnection(conn_dict)
-        logger.info(f"Added connection of type {conn_type}")
+        logger.debug(f"Added connection of type {conn_type}")
 
         # Find this connection and its device
         connections = \
@@ -139,7 +139,7 @@ def connect(conn_type=config.type_hotspot,
                 break
 
         if dev.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED:
-            logger.info("Connected.")
+            logger.info("Active.")
             return True
         # If the current attempt is not already a hotspot attempt
         elif conn_type != config.type_hotspot:
@@ -170,14 +170,14 @@ def forget(create_new_hotspot=False, all_networks=False):
                     # Delete the identified connection
                     network_id = connection.GetSettings()["connection"]["id"]
                     connection.Delete()
-                    logger.info(f"Deleted connection: {network_id}")
+                    logger.debug(f"Deleted connection: {network_id}")
         else:
             connection_ids = \
                 dict([(x.GetSettings()['connection']['id'], x)
                      for x in connections])
             if config.ap_name in connection_ids:
                 connection_ids[config.ap_name].Delete()
-                logger.info(f"Deleted connection: {config.ap_name}")
+                logger.debug(f"Deleted connection: {config.ap_name}")
 
         if create_new_hotspot:
             refresh_networks()

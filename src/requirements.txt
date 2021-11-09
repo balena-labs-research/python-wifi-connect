@@ -28,5 +28,7 @@ six==1.16.0
     # via
     #   flask-restful
     #   python-networkmanager
+waitress==2.0.0
+    # via -r requirements.in
 werkzeug==2.0.2
     # via flask

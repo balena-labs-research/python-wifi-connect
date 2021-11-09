@@ -4,15 +4,21 @@ import logging
 # Create custom logger
 logger = logging.getLogger('syslog')
 syslog = logging.StreamHandler()
-formatter = logging.Formatter('[%(asctime)s] - [%(levelname)s] - [%(module)s:'
-                              '%(lineno)d] - %(message)s', "%Y-%m-%d %H:%M:%S")
-syslog.setFormatter(formatter)
 logger.addHandler(syslog)
-logger.setLevel(logging.INFO)
 
-# Change default logging mode when in development environmnets
-if config.dev_mode:
+# When in development mode provide details in log of each line of code
+# that is executing
+if config.dev_mode is True:
+    formatter = logging.Formatter('[%(asctime)s] - [%(levelname)s] - '
+                                  '[%(module)s:%(lineno)d] - %(message)s',
+                                  '%Y-%m-%d %H:%M:%S')
     logger.setLevel(logging.DEBUG)
+else:
+    formatter = logging.Formatter('[%(asctime)s] - [%(levelname)s] - '
+                                  '%(message)s', '%Y-%m-%d %H:%M:%S')
+    logger.setLevel(logging.INFO)
+
+syslog.setFormatter(formatter)
 
 
 # Error classes for Flask-Restful
