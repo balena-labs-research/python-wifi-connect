@@ -1,4 +1,5 @@
 import threading
+from common.errors import logger
 from common.wifi import check_internet_status
 from common.wifi import check_wifi_status
 from common.wifi import connect
@@ -64,6 +65,7 @@ class wifi_forget(Resource):
                                                       request.get_json()
                                                       ['all_networks']})
 
+        logger.info('Removing connetion...')
         wifi_forget_thread.start()
 
         return {'message': 'accepted'}, 202

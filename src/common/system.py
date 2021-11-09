@@ -1,4 +1,5 @@
 import config
+import os
 import subprocess
 from common.errors import logger
 
@@ -20,3 +21,16 @@ def dnsmasq():
         subprocess.Popen(args)
     except Exception:
         logger.exception('Failed to start dnsmasq.')
+
+
+def led(mode):
+    # Activate LED on compatible devices
+    # 1 = on
+    # 0 = off
+    if "PWC_LED" in os.environ and os.environ['PWC_LED'].lower() == 'on':
+        try:
+            with open('/sys/class/leds/led0/brightness', 'w+') as f:
+                f.write(str(mode))
+        except Exception:
+            # This is not possible on some devices.
+            pass

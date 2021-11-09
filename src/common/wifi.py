@@ -9,6 +9,7 @@ from common.errors import WifiHotspotStartFailed
 from common.errors import WifiNetworkManagerError
 from common.errors import WifiNoSuitableDevice
 from common.nm_dicts import get_nm_dict
+from common.system import led
 
 
 # Import DBus mainloop for NetworkManager use
@@ -108,7 +109,7 @@ def connect(conn_type=config.type_hotspot,
 
     try:
         NetworkManager.Settings.AddConnection(conn_dict)
-        logger.debug(f"Added connection of type {conn_type}")
+        logger.info(f"Adding connection of type {conn_type}")
 
         # Find this connection and its device
         connections = \
@@ -129,8 +130,11 @@ def connect(conn_type=config.type_hotspot,
         # Connect
         NetworkManager.NetworkManager.ActivateConnection(conn, dev, "/")
 
+        # If not a hotspot, log the connection SSID being attempted
+        if conn_type != config.type_hotspot:
+            logger.info(f"Attempting connection to {ssid}")
+
         # Wait for ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
-        logger.info("Waiting for connection to become active...")
         loop_count = 0
         while dev.State != NetworkManager.NM_DEVICE_STATE_ACTIVATED:
             time.sleep(1)
@@ -139,7 +143,14 @@ def connect(conn_type=config.type_hotspot,
                 break
 
         if dev.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED:
-            logger.info("Active.")
+            logger.info("Connection active.")
+
+            # Activate the LED to indicate device is connected.
+            if conn_type is not config.type_hotspot:
+                led(1)
+            else:
+                led(0)
+
             return True
         # If the current attempt is not already a hotspot attempt
         elif conn_type != config.type_hotspot:
@@ -179,6 +190,10 @@ def forget(create_new_hotspot=False, all_networks=False):
                 connection_ids[config.ap_name].Delete()
                 logger.debug(f"Deleted connection: {config.ap_name}")
 
+        # Disable LED indicating Wi-Fi is not active.
+        led(0)
+
+        # If requested, create new Hotspot
         if create_new_hotspot:
             refresh_networks()
             connect()
@@ -195,6 +210,8 @@ def list_access_points():
     # to return so that if IW does not work on this device the refresh
     # button will be disabled.
     iw_status = refresh_networks(retries=1)
+
+    logger.debug('Fetching Wi-Fi networks.')
 
     try:
         # Fetch dictionary of devices
@@ -227,6 +244,8 @@ def list_access_points():
         if item['ssid'] not in tmp and item['ssid'] != config.hotspot_ssid:
             ssids.append(item)
         tmp.append(item['ssid'])
+
+    logger.debug('Finished fetching Wi-Fi networks.')
 
     # Return a list of available SSIDs and their security type,
     # or [] for none available.

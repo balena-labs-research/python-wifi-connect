@@ -32,6 +32,11 @@ Users will then be unable to access the API `http://your-device:9090/v1/connect`
 
 Alternatively, if you would rather have your backend use specified ports instead of the host network, you can change the `PWC_HOST` environment variable to `172.17.0.1` and access the API from `http://172.17.0.1:9090/v1/connect`.
 
+## LED Indicator
+Some devices - such as the Raspberry Pi series - have an LED that can be controlled. When your device is connected to Wi-Fi, Python Wi-Fi Connect turns the LED on. When disconnected or in Hotspot mode, it turns the LED off.
+
+If you need to disable this feature to allow the LED to be used for other purposes, change the environment variable in the docker-compose.yml file to: `PWC_LED: "OFF"`.
+
 
 ## Endpoints
 ### http://your-device:9090/v1/connect

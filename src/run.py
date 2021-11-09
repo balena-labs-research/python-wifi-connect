@@ -3,19 +3,20 @@ import time
 from common.errors import errors
 from common.errors import logger
 from common.system import dnsmasq
+from common.system import led
 from common.wifi import auto_connect
 from common.wifi import check_wifi_status
 from common.wifi import connect
 from common.wifi import refresh_networks
 from config import host
 from config import port
+from flask import Flask
+from flask_restful import Api
 from resources.system_routes import system_health_check
 from resources.wifi_routes import wifi_connect
 from resources.wifi_routes import wifi_connection_status
 from resources.wifi_routes import wifi_forget
 from resources.wifi_routes import wifi_list_access_points
-from flask import Flask
-from flask_restful import Api
 from waitress import serve
 
 
@@ -46,15 +47,16 @@ if __name__ == '__main__':
 
     # If the Wi-Fi connection is not already active, start a hotspot
     if check_wifi_status():
+        led(1)
         logger.info('Wi-Fi connection already established.')
         logger.info('Ready...')
     else:
+        led(0)
         refresh_networks(retries=1)
         if config.auto_connect_kargs:
             logger.info('Attempting auto-connect...')
             auto_connect(**config.auto_connect_kargs)
         else:
-            logger.info('Starting hotspot...')
             connect()
 
     serve(app, host=host, port=port)

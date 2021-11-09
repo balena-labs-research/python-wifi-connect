@@ -2,8 +2,8 @@ import config
 import logging
 
 # Create custom logger
-logger = logging.getLogger('syslog')
 syslog = logging.StreamHandler()
+logger = logging.getLogger('syslog')
 logger.addHandler(syslog)
 
 # When in development mode provide details in log of each line of code
@@ -19,6 +19,7 @@ else:
     logger.setLevel(logging.INFO)
 
 syslog.setFormatter(formatter)
+logger.propagate = False
 
 
 # Error classes for Flask-Restful
