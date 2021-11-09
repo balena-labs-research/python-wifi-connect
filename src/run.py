@@ -1,10 +1,12 @@
 import atexit
+import config
 import signal
 import sys
 import time
 from common.errors import errors
 from common.errors import logger
 from common.system import dnsmasq
+from common.wifi import auto_connect
 from common.wifi import check_wifi_status
 from common.wifi import connect
 from common.wifi import refresh_networks
@@ -29,6 +31,7 @@ def handle_sigterm(*args):
 
 # Startup process
 if __name__ == '__main__':
+    logger.info('Starting...')
     # Load Flask-Restful API
     api = Api(errors=errors)
 
@@ -51,9 +54,13 @@ if __name__ == '__main__':
     if check_wifi_status():
         logger.info('Wi-Fi connection already established.')
     else:
-        logger.info('Starting hotspot...')
         refresh_networks(retries=1)
-        connect()
+        if config.auto_connect_kargs:
+            logger.info('Attempting auto-connect...')
+            auto_connect(**config.auto_connect_kargs)
+        else:
+            logger.info('Starting hotspot...')
+            connect()
 
     # Configure endpoints #
 

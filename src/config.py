@@ -1,28 +1,40 @@
 import os
 
 # Set default Wi-Fi SSID.
-if "HOTSPOT_SSID" in os.environ:
-    hotspot_ssid = os.environ['HOTSPOT_SSID']
+if "PWC_HOTSPOT_SSID" in os.environ:
+    hotspot_ssid = os.environ['PWC_HOTSPOT_SSID']
 else:
     hotspot_ssid = "Py Wi-Fi Connect"
 
 # Set default hotspot password.
-if "HOTSPOT_PASSWORD" in os.environ:
-    hotspot_password = os.environ['HOTSPOT_PASSWORD']
+if "PWC_HOTSPOT_PASSWORD" in os.environ:
+    hotspot_password = os.environ['PWC_HOTSPOT_PASSWORD']
 else:
     hotspot_password = None
 
 # Set default host.
-if "HOST" in os.environ:
-    host = os.environ['HOST']
+if "PWC_HOST" in os.environ:
+    host = os.environ['PWC_HOST']
 else:
     host = '0.0.0.0'
 
 # Set default port.
-if "PORT" in os.environ:
-    port = os.environ['PORT']
+if "PWC_PORT" in os.environ:
+    port = os.environ['PWC_PORT']
 else:
     port = 9090
+
+# Compile kwargs for automatic connection
+if "PWC_SSID" in os.environ:
+    auto_connect_kargs = \
+        {"ssid": os.environ['PWC_SSID']}
+
+    if "PWC_USERNAME" in os.environ:
+        auto_connect_kargs.update(username=os.environ['PWC_USERNAME'])
+    if "PWC_PASSWORD" in os.environ:
+        auto_connect_kargs.update(password=os.environ['PWC_PASSWORD'])
+else:
+    auto_connect_kargs = False
 
 # Default access point name. No need to change these under usual operation as
 # they are for use inside the app only. PWC is acronym for 'Py Wi-Fi Connect'.

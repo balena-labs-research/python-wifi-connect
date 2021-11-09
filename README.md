@@ -1,5 +1,4 @@
 ## Description
-
 An API for controlling Wi-Fi connections on [Balena](https://www.balena.io/os/) devices.
 
 It does not contain an interface, instead it provides API endpoints to send requests to interact with the device. Any interface of your choice can be built to interact with the API. If you develop an interface that is open source, please do let me know so I can provide people links. 
@@ -13,21 +12,28 @@ You can set your own default Wi-Fi SSID and a Wi-Fi password for your hotspot us
 
 Enjoy and please do feel free to feedback experiences and issues.
 
-## Securing the API
+## Automatic connections
+You can specify a Wi-Fi connection you would like your device to try and connect to the first time it loads by using the environment variables in the docker-compose.yml file. Once this connection is established, the device will stay connected after reboots until you use the `forget` endpoint. If the network is not available, the hotspot will start instead.
 
+````
+PWC_SSID: "network-name" # The SSID of the network you would like to try and auto-connect.
+USERNAME: "username" # Optional, for enterprise networks
+PWC_PASSWORD: "your-password" # Optional, the password associated with the Wi-Fi network. Must be 8 characters or more. 
+````
+
+## Securing the API
 By default, the API is exposed so your interface can interact directly. In other words, anyone can go to `http://your-device:9090/v1/connect` to send commands to your device. 
 
-If you would prefer to only allow access from your backend, change the `host` environment variable to `127.0.0.1`. Then ensure your backend container is connected to the host network so it matches the API docker-compose.yml file in this repo:
+If you would prefer to only allow access from your backend, change the `PWC_HOST` environment variable to `127.0.0.1`. Then ensure your backend container is connected to the host network so it matches the API docker-compose.yml file in this repo:
 
 `network_mode: "host"`
 
 Users will then be unable to access the API `http://your-device:9090/v1/connect`. Your backend container on the device, however, can reach the API using `http://127.0.0.1:9090/v1/connect`. This is useful if your interface has a login process, and you only want users to be able to interact with Wi-Fi after logging in.
 
-Alternatively, if you would rather have your backend use specified ports instead of the host network, you can change the `host` environment variable to `172.17.0.1` and access the API from `http://172.17.0.1:9090/v1/connect`.
+Alternatively, if you would rather have your backend use specified ports instead of the host network, you can change the `PWC_HOST` environment variable to `172.17.0.1` and access the API from `http://172.17.0.1:9090/v1/connect`.
 
 
 ## Endpoints
-
 ### http://your-device:9090/v1/connect
 Connect to a nearby Wi-Fi access point.
 

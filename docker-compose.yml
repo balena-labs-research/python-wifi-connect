@@ -3,10 +3,20 @@ version: '2.1'
 services:
   py-wifi-connect:
     environment:
-      HOTSPOT_SSID: "Py Wi-Fi Connect"
-      #HOTSPOT_PASSWORD: "my-hotspot-password" # Hotspot passwords must be 8 characters or more.
-      HOST: "0.0.0.0"
-      PORT: 9090
+      ## Listening IP and port ##
+      PWC_HOST: "0.0.0.0"
+      PWC_PORT: 9090
+
+      ## Hotspot details ##
+      PWC_HOTSPOT_SSID: "Py Wi-Fi Connect"
+      #HOTSPOT_PASSWORD: "my-hotspot-password" # Optional hotspot password. Must be 8 characters or more.
+
+      ## Try to automatically set up a Wi-Fi network on first boot ##
+      #PWC_SSID: "network-name" # Compulsory for this feature
+      #USERNAME: "username" # Optional
+      #PWC_PASSWORD: "your-password" # Optional. Must be 8 characters or more. 
+
+      ## System Variables ##
       DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/host/run/dbus/system_bus_socket"
     build:
       context: .

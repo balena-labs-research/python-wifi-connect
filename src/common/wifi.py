@@ -47,6 +47,24 @@ def analyse_access_point(ap):
     return entry
 
 
+def auto_connect(ssid=None,
+                 username=None,
+                 password=None):
+    ssids, _ = list_access_points()
+
+    for ssid_item in ssids:
+        if ssid_item['ssid'] == ssid:
+            connect(conn_type=ssid_item['conn_type'],
+                    ssid=ssid,
+                    username=username,
+                    password=password)
+            break
+    else:
+        logger.info('Auto-connect failed as the device could not find the '
+                    'specified network.')
+        connect()
+
+
 def check_internet_status(host="8.8.8.8", port=53, timeout=5):
     try:
         socket.setdefaulttimeout(timeout)
@@ -236,7 +254,7 @@ def refresh_networks(retries=5):
             logger.error('Unknown error calling IW.')
             return False
         else:
-            logger.info('IW succeeded.')
+            logger.debug('IW succeeded.')
             return True
         finally:
             run += 1
