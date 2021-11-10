@@ -3,6 +3,10 @@ An API for controlling Wi-Fi connections on [Balena](https://www.balena.io/os/) 
 
 It does not contain a user interface, instead it provides API endpoints to send requests to interact with the device. Any user interface of your choice can be built to interact with the API. If you develop a user interface that is open source, please do let me know so I can provide people links. 
 
+
+## Example user interface (not included)
+![139806567-9e33980f-b3e7-4ae2-acaa-81e5a4e93365](https://user-images.githubusercontent.com/64841595/141178572-d3e15a19-0ec3-4303-b34a-3d19f5a54a07.jpeg)
+
 ## Get started
 On launch, the app will detect if you already have a Wi-Fi connection. If you do, it will sleep and wait for a command. If you don’t, it will launch a hotspot and wait for a connection from you. Once connected, you can take further actions using the endpoints listed below.
 
@@ -36,7 +40,7 @@ Alternatively, if you would rather have your backend use specified ports instead
 By default, the first available Wi-Fi network interface available will be used. For the vast majority of cases there is only one Wi-Fi network interface (`wlan0`) and therefore this is no issue. Similarly, if you plug in a Wi-Fi dongle to a device without its own built-in Wi-Fi, the Wi-Fi dongle will be used by default. If however, you have a device with built in Wi-Fi and a Wi-Fi dongle, you will have a device with two network interfaces (usually `wlan0` and `wlan1`). For these instances, or on other occasions where you have a complex interface setup, you can specify which network interface you would like Py Wi-Fi Connect to use by setting the environment variable shown in the `docker-compose.yml` file:
 
 ````
-PWC_INTERFACE: "wlan0" // Optional. 
+PWC_INTERFACE: "wlan0"
 ````
 
 To allow for automatic detection, set the variable to `false` or remove the variable from your `docker-compose.yml` file:
@@ -98,7 +102,7 @@ When passing `"all_networks": false` this endpoint will only touch Wi-Fi connect
 #### POST
 ````
 {
-    "all_networks": false // Optional. Defaults to False.
+    "all_networks": false
 }
 ````
 
@@ -173,7 +177,7 @@ Changing the setting will only last until the next restart of the container, whe
 #### POST
 ````
 {
-    "interface": "wlan0" // Optional.
+    "interface": "wlan0"
 }
 ````
 
