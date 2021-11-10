@@ -66,6 +66,17 @@ def auto_connect(ssid=None,
         connect()
 
 
+# Returns True when a connection to a router is made, or the Hotspot is live
+def check_device_state():
+    # Save the wi-fi device object to a variable
+    if get_device().State == NetworkManager.NM_DEVICE_STATE_ACTIVATED:
+        return True
+    else:
+        return False
+
+
+# Ignores device and Wi-Fi status and checks for internet. Helpful for when
+# connected to Ethernet.
 def check_internet_status(host="8.8.8.8", port=53, timeout=5):
     try:
         socket.setdefaulttimeout(timeout)
@@ -77,6 +88,7 @@ def check_internet_status(host="8.8.8.8", port=53, timeout=5):
         return False
 
 
+# Checks if there is an active connection to an external Wi-Fi router
 def check_wifi_status():
     try:
         run = subprocess.run(["iw", "dev", "wlan0", "link"],
@@ -111,24 +123,13 @@ def connect(conn_type=config.type_hotspot,
         NetworkManager.Settings.AddConnection(conn_dict)
         logger.info(f"Adding connection of type {conn_type}")
 
-        # Find this connection and its device
-        connections = \
-            dict([(x.GetSettings()['connection']['id'], x)
-                 for x in NetworkManager.Settings.ListConnections()])
-        conn = connections[config.ap_name]
-
         # Save the wi-fi device object to a variable
-        devices = dict([(x.DeviceType, x)
-                        for x in NetworkManager.NetworkManager.GetDevices()])
-
-        if NetworkManager.NM_DEVICE_TYPE_WIFI in devices:
-            dev = devices[NetworkManager.NM_DEVICE_TYPE_WIFI]
-        else:
-            logger.error("No suitable and available device found")
-            raise WifiNoSuitableDevice
+        dev = get_device()
 
         # Connect
-        NetworkManager.NetworkManager.ActivateConnection(conn, dev, "/")
+        NetworkManager.NetworkManager.ActivateConnection(get_connection_id(),
+                                                         dev,
+                                                         "/")
 
         # If not a hotspot, log the connection SSID being attempted
         if conn_type != config.type_hotspot:
@@ -136,13 +137,13 @@ def connect(conn_type=config.type_hotspot,
 
         # Wait for ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
         loop_count = 0
-        while dev.State != NetworkManager.NM_DEVICE_STATE_ACTIVATED:
+        while not check_device_state():
             time.sleep(1)
             loop_count += 1
             if loop_count > 30:  # Only wait 30 seconds max
                 break
 
-        if dev.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED:
+        if check_device_state():
             logger.info("Connection active.")
 
             # Activate the LED to indicate device is connected.
@@ -172,10 +173,8 @@ def connect(conn_type=config.type_hotspot,
 def forget(create_new_hotspot=False, all_networks=False):
     # Find and delete the hotspot connection
     try:
-        connections = NetworkManager.Settings.ListConnections()
-
         if all_networks:
-            for connection in connections:
+            for connection in NetworkManager.Settings.ListConnections():
                 if connection.GetSettings()["connection"]["type"] \
                         == "802-11-wireless":
                     # Delete the identified connection
@@ -183,11 +182,9 @@ def forget(create_new_hotspot=False, all_networks=False):
                     connection.Delete()
                     logger.debug(f"Deleted connection: {network_id}")
         else:
-            connection_ids = \
-                dict([(x.GetSettings()['connection']['id'], x)
-                     for x in connections])
-            if config.ap_name in connection_ids:
-                connection_ids[config.ap_name].Delete()
+            connection_id = get_connection_id()
+            if connection_id:
+                connection_id.Delete()
                 logger.debug(f"Deleted connection: {config.ap_name}")
 
         # Disable LED indicating Wi-Fi is not active.
@@ -205,6 +202,27 @@ def forget(create_new_hotspot=False, all_networks=False):
     return True
 
 
+def get_connection_id():
+    connection = dict([(x.GetSettings()['connection']['id'], x)
+                      for x in NetworkManager.Settings.ListConnections()])
+
+    if config.ap_name in connection:
+        return connection[config.ap_name]
+    else:
+        return False
+
+
+def get_device():
+    devices = dict([(x.DeviceType, x)
+                   for x in NetworkManager.NetworkManager.GetDevices()])
+
+    if NetworkManager.NM_DEVICE_TYPE_WIFI in devices:
+        return devices[NetworkManager.NM_DEVICE_TYPE_WIFI]
+    else:
+        logger.error("No suitable or available device found.")
+        raise WifiNoSuitableDevice
+
+
 def list_access_points():
     # Run IW to reduce chance of empty SSID list. Storing result
     # to return so that if IW does not work on this device the refresh
@@ -215,15 +233,7 @@ def list_access_points():
 
     try:
         # Fetch dictionary of devices
-        devices = dict([(x.DeviceType, x)
-                        for x in NetworkManager.NetworkManager.GetDevices()])
-
-        # Save the wi-fi device object to a variable
-        if NetworkManager.NM_DEVICE_TYPE_WIFI in devices:
-            dev = devices[NetworkManager.NM_DEVICE_TYPE_WIFI]
-        else:
-            logger.error("No suitable and available device found")
-            raise WifiNoSuitableDevice
+        dev = get_device()
 
         # For each wi-fi connection in range, identify it's details
         compiled_ssids = [analyse_access_point(ap)
@@ -267,7 +277,7 @@ def refresh_networks(retries=5):
             time.sleep(3)
             subprocess.check_output(["iw", "dev", "wlan0", "scan"])
         except subprocess.CalledProcessError:
-            logger.warning('Resource busy. Retrying...')
+            logger.warning('IW resource busy. Retrying...')
             continue
         except Exception:
             logger.error('Unknown error calling IW.')

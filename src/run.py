@@ -5,6 +5,7 @@ from common.errors import logger
 from common.system import dnsmasq
 from common.system import led
 from common.wifi import auto_connect
+from common.wifi import check_device_state
 from common.wifi import check_wifi_status
 from common.wifi import connect
 from common.wifi import refresh_networks
@@ -45,11 +46,12 @@ if __name__ == '__main__':
     # Allow time for an exsiting saved Wi-Fi connection to connect.
     time.sleep(10)
 
-    # If the Wi-Fi connection is not already active, start a hotspot
-    if check_wifi_status():
+    # If the Wi-Fi connection or device is already active, do nothing
+    if check_wifi_status() or check_device_state():
         led(1)
-        logger.info('Wi-Fi connection already established.')
+        logger.info('A Wi-Fi connection or hotspot is already active.')
         logger.info('Ready...')
+    # If the Wi-Fi connection and device are not active, start a hotspot
     else:
         led(0)
         refresh_networks(retries=1)
