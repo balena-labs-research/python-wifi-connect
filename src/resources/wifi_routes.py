@@ -1,3 +1,4 @@
+import config
 import threading
 from common.errors import logger
 from common.wifi import check_internet_status
@@ -49,12 +50,12 @@ class wifi_forget(Resource):
         if not check_wifi_status():
             return {'message': 'Device is already disconnected.'}, 409
 
-        # Check the all_networks boolean is valid
+        # Check the all_networks boolean
         if (not request.get_json() or
-            'all_networks' not in request.get_json()
-                or type(request.get_json()['all_networks']) is not bool):
-            return {'message': "all_networks boolean missing or is not "
-                               "a boolean."}, 202
+                'all_networks' not in request.get_json()):
+            forget_mode = False
+        else:
+            forget_mode = request.get_json()['all_networks']
 
         # Use threading so the response can be returned before the user is
         # disconnected.
@@ -62,8 +63,7 @@ class wifi_forget(Resource):
                                               kwargs={'create_new_hotspot':
                                                       True,
                                                       'all_networks':
-                                                      request.get_json()
-                                                      ['all_networks']})
+                                                      forget_mode})
 
         logger.info('Removing connetion...')
         wifi_forget_thread.start()
@@ -76,3 +76,15 @@ class wifi_list_access_points(Resource):
         ssids, iw_status = list_access_points()
 
         return {'ssids': ssids, 'iw_compatible': iw_status}
+
+
+class wifi_set_interface(Resource):
+    def post(self):
+        # Check entry exists
+        if (not request.get_json() or
+                'interface' not in request.get_json()):
+            return {'message': 'Interface value not provided.'}, 500
+        else:
+            config.interface = request.get_json()['interface']
+            logger.info(f"Interface changed to {config.interface}")
+            return {'message': 'ok'}, 200

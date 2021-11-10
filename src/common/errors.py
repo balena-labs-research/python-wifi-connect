@@ -27,6 +27,11 @@ class WifiConnectionFailed(Exception):
     pass
 
 
+# Error classes for Flask-Restful
+class WifiDeviceNotFound(Exception):
+    pass
+
+
 class WifiHotspotStartFailed(Exception):
     pass
 
@@ -47,6 +52,10 @@ class WifiNoSuitableDevice(Exception):
 errors = {
     "WifiConnectionFailed": {
          "message": "System error while establishing Wi-Fi connection.",
+         "status": 500
+     },
+    "WifiDeviceNotFound": {
+         "message": "Requested device not available.",
          "status": 500
      },
     "WifiHotspotStartFailed": {

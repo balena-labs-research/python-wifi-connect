@@ -1,3 +1,4 @@
+import json
 import os
 
 # Set default Wi-Fi SSID.
@@ -25,16 +26,23 @@ else:
     port = 9090
 
 # Compile kwargs for automatic connection
-if "PWC_SSID" in os.environ:
+if "PWC_AC_SSID" in os.environ:
     auto_connect_kargs = \
-        {"ssid": os.environ['PWC_SSID']}
+        {"ssid": os.environ['PWC_AC_SSID']}
 
-    if "PWC_USERNAME" in os.environ:
-        auto_connect_kargs.update(username=os.environ['PWC_USERNAME'])
-    if "PWC_PASSWORD" in os.environ:
-        auto_connect_kargs.update(password=os.environ['PWC_PASSWORD'])
+    if "PWC_AC_USERNAME" in os.environ:
+        auto_connect_kargs.update(username=os.environ['PWC_AC_USERNAME'])
+    if "PWC_AC_PASSWORD" in os.environ:
+        auto_connect_kargs.update(password=os.environ['PWC_AC_PASSWORD'])
 else:
     auto_connect_kargs = False
+
+# Set default interface
+if "PWC_INTERFACE" in os.environ and \
+        json.loads(os.environ['PWC_INTERFACE']) is not False:
+    interface = os.environ['PWC_INTERFACE']
+else:
+    interface = False
 
 # Default access point name. No need to change these under usual operation as
 # they are for use inside the app only. PWC is acronym for 'Py Wi-Fi Connect'.

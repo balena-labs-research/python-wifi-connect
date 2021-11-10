@@ -24,9 +24,10 @@ def get_nm_dict(conn_type, ssid, username, password):
         }
 
         # Include a key-mgmt string in hotspot if setting a password
-        if password:
+        if config.hotspot_password:
             password_key_mgmt = {'802-11-wireless-security':
-                                 {'key-mgmt': 'wpa-psk', 'psk': password}}
+                                 {'key-mgmt': 'wpa-psk',
+                                  'psk': config.hotspot_password}}
 
             hs_dict.update(password_key_mgmt)
 

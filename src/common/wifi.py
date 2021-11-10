@@ -1,10 +1,11 @@
 import config
-import NetworkManager
+import NetworkManager as Pnm  # Python NetworkManager
 import socket
 import subprocess
 import time
 from common.errors import logger
 from common.errors import WifiConnectionFailed
+from common.errors import WifiDeviceNotFound
 from common.errors import WifiHotspotStartFailed
 from common.errors import WifiNetworkManagerError
 from common.errors import WifiNoSuitableDevice
@@ -23,8 +24,8 @@ def analyse_access_point(ap):
     # Based on a subset of the AP_SEC flag settings
     # (https://developer.gnome.org/NetworkManager/1.2/nm-dbus-types.html#NM80211ApSecurityFlags)
     # to determine which type of security this AP uses.
-    AP_SEC = NetworkManager.NM_802_11_AP_SEC_NONE
-    if ap.Flags & NetworkManager.NM_802_11_AP_FLAGS_PRIVACY and \
+    AP_SEC = Pnm.NM_802_11_AP_SEC_NONE
+    if ap.Flags & Pnm.NM_802_11_AP_FLAGS_PRIVACY and \
             ap.WpaFlags == AP_SEC and \
             ap.RsnFlags == AP_SEC:
         security = config.type_wep
@@ -36,9 +37,9 @@ def analyse_access_point(ap):
         security = config.type_wpa2
 
     if ap.WpaFlags & \
-        NetworkManager.NM_802_11_AP_SEC_KEY_MGMT_802_1X or \
+        Pnm.NM_802_11_AP_SEC_KEY_MGMT_802_1X or \
             ap.RsnFlags & \
-            NetworkManager.NM_802_11_AP_SEC_KEY_MGMT_802_1X:
+            Pnm.NM_802_11_AP_SEC_KEY_MGMT_802_1X:
         security = config.type_enterprise
 
     entry = {"ssid": ap.Ssid,
@@ -69,7 +70,7 @@ def auto_connect(ssid=None,
 # Returns True when a connection to a router is made, or the Hotspot is live
 def check_device_state():
     # Save the wi-fi device object to a variable
-    if get_device().State == NetworkManager.NM_DEVICE_STATE_ACTIVATED:
+    if get_device().State == Pnm.NM_DEVICE_STATE_ACTIVATED:
         return True
     else:
         return False
@@ -112,24 +113,20 @@ def connect(conn_type=config.type_hotspot,
     # Remove any existing connection made by this app
     forget()
 
-    # If user has specified a password for their hotspot
-    if conn_type == config.type_hotspot and config.hotspot_password:
-        password = config.hotspot_password
-
     # Get the correct config based on type requested
     conn_dict = get_nm_dict(conn_type, ssid, username, password)
 
     try:
-        NetworkManager.Settings.AddConnection(conn_dict)
+        Pnm.Settings.AddConnection(conn_dict)
         logger.info(f"Adding connection of type {conn_type}")
 
         # Save the wi-fi device object to a variable
         dev = get_device()
 
         # Connect
-        NetworkManager.NetworkManager.ActivateConnection(get_connection_id(),
-                                                         dev,
-                                                         "/")
+        Pnm.NetworkManager.ActivateConnection(get_connection_id(),
+                                              dev,
+                                              "/")
 
         # If not a hotspot, log the connection SSID being attempted
         if conn_type != config.type_hotspot:
@@ -174,7 +171,7 @@ def forget(create_new_hotspot=False, all_networks=False):
     # Find and delete the hotspot connection
     try:
         if all_networks:
-            for connection in NetworkManager.Settings.ListConnections():
+            for connection in Pnm.Settings.ListConnections():
                 if connection.GetSettings()["connection"]["type"] \
                         == "802-11-wireless":
                     # Delete the identified connection
@@ -183,6 +180,8 @@ def forget(create_new_hotspot=False, all_networks=False):
                     logger.debug(f"Deleted connection: {network_id}")
         else:
             connection_id = get_connection_id()
+            # connection_id returns false if it is missing. This can be ignored
+            # as this function is often called as a precautionary clean up
             if connection_id:
                 connection_id.Delete()
                 logger.debug(f"Deleted connection: {config.ap_name}")
@@ -204,7 +203,7 @@ def forget(create_new_hotspot=False, all_networks=False):
 
 def get_connection_id():
     connection = dict([(x.GetSettings()['connection']['id'], x)
-                      for x in NetworkManager.Settings.ListConnections()])
+                      for x in Pnm.Settings.ListConnections()])
 
     if config.ap_name in connection:
         return connection[config.ap_name]
@@ -213,11 +212,26 @@ def get_connection_id():
 
 
 def get_device():
-    devices = dict([(x.DeviceType, x)
-                   for x in NetworkManager.NetworkManager.GetDevices()])
+    # Configured interface variable takes precedent.
+    if config.interface:
+        logger.debug(f"Interface {config.interface} selected.")
+        for device in Pnm.NetworkManager.GetDevices():
+            if device.DeviceType != Pnm.NM_DEVICE_TYPE_WIFI:
+                continue
+            # For each Wi-Fi network interface, check the interface name
+            # against the one configured in config.interface
+            if (device.Udi[device.Udi.rfind('/')+1:].lower()
+                    == config.interface.lower()):
+                return device
+            else:
+                raise WifiDeviceNotFound
 
-    if NetworkManager.NM_DEVICE_TYPE_WIFI in devices:
-        return devices[NetworkManager.NM_DEVICE_TYPE_WIFI]
+    # Fetch last Wi-Fi interface found
+    devices = dict([(x.DeviceType, x)
+                   for x in Pnm.NetworkManager.GetDevices()])
+
+    if Pnm.NM_DEVICE_TYPE_WIFI in devices:
+        return devices[Pnm.NM_DEVICE_TYPE_WIFI]
     else:
         logger.error("No suitable or available device found.")
         raise WifiNoSuitableDevice

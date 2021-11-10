@@ -9,17 +9,20 @@ services:
 
       ## Hotspot details ##
       PWC_HOTSPOT_SSID: "Py Wi-Fi Connect"
-      #HOTSPOT_PASSWORD: "my-hotspot-password" # Optional hotspot password. Must be 8 characters or more.
+      #PWC_HOTSPOT_PASSWORD: "my-hotspot-password" # Optional. Must be 8 characters or more.
 
       ## Try to automatically set up a Wi-Fi network on first boot ##
-      #PWC_SSID: "network-name" # Compulsory for this feature
-      #USERNAME: "username" # Optional
-      #PWC_PASSWORD: "your-password" # Optional. Must be 8 characters or more.
+      #PWC_AC_SSID: "network-name" # Compulsory for this feature
+      #PWC_AC_USERNAME: "username" # Optional
+      #PWC_AC_PASSWORD: "your-password" # Optional. Must be 8 characters or more.
+
+      ## Wi-Fi Interface ##
+      # PWC_INTERFACE: 'wlan0' # When disabled interface is auto detected
 
       ## Enable/Disable LED interaction ##
       PWC_LED: "ON"
 
-      ## Required System Variables ##
+      ## Required system variables ##
       DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/host/run/dbus/system_bus_socket"
     build:
       context: .
@@ -30,4 +33,4 @@ services:
       io.balena.features.dbus: '1'
     cap_add:
       - NET_ADMIN
-    privileged: true # This can be removed if you do not need the LED indicator (see the docs for more info).
+    privileged: true # This can be removed if you do not need the LED indicator.

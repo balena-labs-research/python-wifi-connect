@@ -16,9 +16,9 @@ Enjoy and please do feel free to feedback experiences and issues.
 You can specify a Wi-Fi connection you would like your device to try and connect to the first time it loads by using the environment variables in the docker-compose.yml file. Once this connection is established, the device will stay connected after reboots until you use the `forget` endpoint. If the network is not available, the hotspot will start instead.
 
 ````
-PWC_SSID: "network-name" # The SSID of the network you would like to try and auto-connect.
-USERNAME: "username" # Optional, for enterprise networks
-PWC_PASSWORD: "your-password" # Optional, the password associated with the Wi-Fi network. Must be 8 characters or more. 
+PWC_AC_SSID: "network-name" # The SSID of the network you would like to try and auto-connect.
+PWC_AC_USERNAME: "username" # Optional, for enterprise networks
+PWC_AC_PASSWORD: "your-password" # Optional, the password associated with the Wi-Fi network. Must be 8 characters or more. 
 ````
 
 ## Securing the API
@@ -31,6 +31,21 @@ If you would prefer to only allow access from your backend, change the `PWC_HOST
 Users will then be unable to access the API `http://your-device:9090/v1/connect`. Your backend container on the device, however, can reach the API using `http://127.0.0.1:9090/v1/connect`. This is useful if your interface has a login process, and you only want users to be able to interact with Wi-Fi after logging in.
 
 Alternatively, if you would rather have your backend use specified ports instead of the host network, you can change the `PWC_HOST` environment variable to `172.17.0.1` and access the API from `http://172.17.0.1:9090/v1/connect`.
+
+## Changing the default interface
+By default, the first available Wi-Fi interface available will be used. For the vast majority of cases there is only one Wi-Fi interface (`wlan0`) and therefore this is no issue. Similarly, if you plug in a Wi-Fi dongle to a device without its own built-in Wi-Fi, the Wi-Fi dongle will be used by default. If however, you have a device with built in Wi-Fi and a Wi-Fi dongle, you will have a device with two interfaces (usually `wlan0` and `wlan1`). For these instances, or on other occasions where you have a complex interface setup, you can specify which interface you would like Py Wi-Fi Connect to use by setting the environment variable shown in the `docker-compose.yml` file:
+
+````
+PWC_INTERFACE: "wlan0" // Optional. 
+````
+
+To allow for automatic detection, set the variable to `false` or remove the variable from your `docker-compose.yml` file:
+
+````
+PWC_INTERFACE: false
+````
+
+This setting can also be controlled using the `/set_interface` endpoint.
 
 ## LED Indicator
 Some devices - such as the Raspberry Pi series - have an LED that can be controlled. When your device is connected to Wi-Fi, Python Wi-Fi Connect turns the LED on. When disconnected or in Hotspot mode, it turns the LED off.
@@ -83,7 +98,7 @@ When passing `"all_networks": false` this endpoint will only touch Wi-Fi connect
 #### POST
 ````
 {
-    "all_networks": false
+    "all_networks": false // Optional. Defaults to False.
 }
 ````
 
@@ -141,6 +156,28 @@ Check whether the API is available. Accessing this path will not record anything
 
 #### Response status 200
 Requests are returned immediately and then the process is executed. Otherwise users would be disconnected before they were able to receive the returned response. 
+````
+{
+    "message": "ok"
+}
+````
+
+### http://your-device:9090/v1//set_interface
+
+By default the Wi-Fi interface is auto-detected. If you need to specify an interface, you can do so using this endpoint. 
+
+To set back to auto-detection, pass `false` as the value.
+
+Changing the setting will only last until the next restart of the container, when it will resort back to the default setting set by the environment variable in the container. 
+
+#### POST
+````
+{
+    "all_networks": "wlan0" // Optional.
+}
+````
+
+#### Response status 200
 ````
 {
     "message": "ok"

@@ -18,6 +18,7 @@ from resources.wifi_routes import wifi_connect
 from resources.wifi_routes import wifi_connection_status
 from resources.wifi_routes import wifi_forget
 from resources.wifi_routes import wifi_list_access_points
+from resources.wifi_routes import wifi_set_interface
 from waitress import serve
 
 
@@ -35,6 +36,7 @@ api.add_resource(wifi_connect, '/v1/connect')
 api.add_resource(wifi_connection_status, '/v1/connection_status')
 api.add_resource(wifi_forget, '/v1/forget')
 api.add_resource(wifi_list_access_points, '/v1/list_access_points')
+api.add_resource(wifi_set_interface, '/v1/set_interface')
 
 if __name__ == '__main__':
     # Begin loading program
@@ -45,6 +47,10 @@ if __name__ == '__main__':
 
     # Allow time for an exsiting saved Wi-Fi connection to connect.
     time.sleep(10)
+
+    # Log interface status
+    if config.interface:
+        logger.info(f"Interface set to {config.interface}")
 
     # If the Wi-Fi connection or device is already active, do nothing
     if check_wifi_status() or check_device_state():
