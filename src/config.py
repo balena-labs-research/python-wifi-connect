@@ -37,11 +37,12 @@ else:
     auto_connect_kargs = False
 
 # Set default interface
+auto_interface = 'auto'
 if "PWC_INTERFACE" in os.environ and \
-        os.environ['PWC_INTERFACE'].lower() != 'false':
+        os.environ['PWC_INTERFACE'].lower() != auto_interface:
     interface = os.environ['PWC_INTERFACE']
 else:
-    interface = False
+    interface = auto_interface
 
 # Default access point name. No need to change these under usual operation as
 # they are for use inside the app only. PWC is acronym for 'Py Wi-Fi Connect'.

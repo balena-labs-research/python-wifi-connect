@@ -217,7 +217,7 @@ def get_connection_id():
 
 def get_device():
     # Configured interface variable takes precedent.
-    if config.interface:
+    if config.interface.lower() != config.auto_interface:
         logger.debug(f"Interface {config.interface} selected.")
         for device in Pnm.NetworkManager.GetDevices():
             if device.DeviceType != Pnm.NM_DEVICE_TYPE_WIFI:

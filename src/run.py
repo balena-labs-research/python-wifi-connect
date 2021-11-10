@@ -49,7 +49,7 @@ if __name__ == '__main__':
     time.sleep(10)
 
     # Log interface status
-    if config.interface:
+    if config.interface.lower() != config.auto_interface:
         logger.info(f"Interface set to {config.interface}")
 
     # If the Wi-Fi connection or device is already active, do nothing

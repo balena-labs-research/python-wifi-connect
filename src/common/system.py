@@ -27,7 +27,8 @@ def led(mode):
     # Activate LED on compatible devices
     # 1 = on
     # 0 = off
-    if "PWC_LED" in os.environ and os.environ['PWC_LED'].lower() == 'on':
+    if "PWC_LED" not in os.environ or ("PWC_LED" in os.environ and
+                                       os.environ['PWC_LED'].lower() == 'on'):
         try:
             with open('/sys/class/leds/led0/brightness', 'w+') as f:
                 f.write(str(mode))
