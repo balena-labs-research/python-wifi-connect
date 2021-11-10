@@ -1,7 +1,7 @@
 ## Description
 An API for controlling Wi-Fi connections on [Balena](https://www.balena.io/os/) devices.
 
-It does not contain an interface, instead it provides API endpoints to send requests to interact with the device. Any interface of your choice can be built to interact with the API. If you develop an interface that is open source, please do let me know so I can provide people links. 
+It does not contain a user interface, instead it provides API endpoints to send requests to interact with the device. Any user interface of your choice can be built to interact with the API. If you develop a user interface that is open source, please do let me know so I can provide people links. 
 
 ## Get started
 On launch, the app will detect if you already have a Wi-Fi connection. If you do, it will sleep and wait for a command. If you don’t, it will launch a hotspot and wait for a connection from you. Once connected, you can take further actions using the endpoints listed below.
@@ -22,18 +22,18 @@ PWC_AC_PASSWORD: "your-password" # Optional, the password associated with the Wi
 ````
 
 ## Securing the API
-By default, the API is exposed so your interface can interact directly. In other words, anyone can go to `http://your-device:9090/v1/connect` to send commands to your device. 
+By default, the API is exposed so your user interface can interact directly. In other words, anyone can go to `http://your-device:9090/v1/connect` to send commands to your device. 
 
 If you would prefer to only allow access from your backend, change the `PWC_HOST` environment variable to `127.0.0.1`. Then ensure your backend container is connected to the host network so it matches the API docker-compose.yml file in this repo:
 
 `network_mode: "host"`
 
-Users will then be unable to access the API `http://your-device:9090/v1/connect`. Your backend container on the device, however, can reach the API using `http://127.0.0.1:9090/v1/connect`. This is useful if your interface has a login process, and you only want users to be able to interact with Wi-Fi after logging in.
+Users will then be unable to access the API `http://your-device:9090/v1/connect`. Your backend container on the device, however, can reach the API using `http://127.0.0.1:9090/v1/connect`. This is useful if your user interface has a login process, and you only want users to be able to interact with Wi-Fi after logging in.
 
 Alternatively, if you would rather have your backend use specified ports instead of the host network, you can change the `PWC_HOST` environment variable to `172.17.0.1` and access the API from `http://172.17.0.1:9090/v1/connect`.
 
-## Changing the default interface
-By default, the first available Wi-Fi interface available will be used. For the vast majority of cases there is only one Wi-Fi interface (`wlan0`) and therefore this is no issue. Similarly, if you plug in a Wi-Fi dongle to a device without its own built-in Wi-Fi, the Wi-Fi dongle will be used by default. If however, you have a device with built in Wi-Fi and a Wi-Fi dongle, you will have a device with two interfaces (usually `wlan0` and `wlan1`). For these instances, or on other occasions where you have a complex interface setup, you can specify which interface you would like Py Wi-Fi Connect to use by setting the environment variable shown in the `docker-compose.yml` file:
+## Changing the default network interface
+By default, the first available Wi-Fi network interface available will be used. For the vast majority of cases there is only one Wi-Fi network interface (`wlan0`) and therefore this is no issue. Similarly, if you plug in a Wi-Fi dongle to a device without its own built-in Wi-Fi, the Wi-Fi dongle will be used by default. If however, you have a device with built in Wi-Fi and a Wi-Fi dongle, you will have a device with two network interfaces (usually `wlan0` and `wlan1`). For these instances, or on other occasions where you have a complex interface setup, you can specify which network interface you would like Py Wi-Fi Connect to use by setting the environment variable shown in the `docker-compose.yml` file:
 
 ````
 PWC_INTERFACE: "wlan0" // Optional. 
@@ -145,7 +145,7 @@ Fetch list of nearby Wi-Fi networks for passing to the connect endpoint.
     // When this is false, your device may need to be restarted to refresh 
     // the networks list. When it is True, you may be able to refresh the 
     // links by calling the list_access_points endpoint again. Useful for 
-    // enabling or disabling a refresh button on an interface.
+    // enabling or disabling a refresh button on a user interface.
 }
 ````
 
@@ -162,9 +162,9 @@ Requests are returned immediately and then the process is executed. Otherwise us
 }
 ````
 
-### http://your-device:9090/v1//set_interface
+### http://your-device:9090/v1/set_interface
 
-By default the Wi-Fi interface is auto-detected. If you need to specify an interface, you can do so using this endpoint. 
+By default the Wi-Fi network interface is auto-detected. If you need to specify a network interface, you can do so using this endpoint. 
 
 To set back to auto-detection, pass `false` as the value.
 
@@ -173,7 +173,7 @@ Changing the setting will only last until the next restart of the container, whe
 #### POST
 ````
 {
-    "all_networks": "wlan0" // Optional.
+    "interface": "wlan0" // Optional.
 }
 ````
 
