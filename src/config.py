@@ -1,4 +1,3 @@
-import json
 import os
 
 # Set default Wi-Fi SSID.
@@ -39,7 +38,7 @@ else:
 
 # Set default interface
 if "PWC_INTERFACE" in os.environ and \
-        json.loads(os.environ['PWC_INTERFACE']) is not False:
+        os.environ['PWC_INTERFACE'].lower() != 'false':
     interface = os.environ['PWC_INTERFACE']
 else:
     interface = False

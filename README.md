@@ -59,7 +59,7 @@ If you need to disable this feature to allow the LED to be used for other purpos
 
 ## Endpoints
 ### http://your-device:9090/v1/connect
-Connect to a nearby Wi-Fi access point.
+Connect to a nearby Wi-Fi access point. Once connected the device will automatically connect to the same network on next boot until you call the `/forget` endpoint. 
 
 #### POST
 ````

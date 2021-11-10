@@ -121,12 +121,9 @@ def connect(conn_type=config.type_hotspot,
         Pnm.Settings.AddConnection(conn_dict)
         logger.info(f"Adding connection of type {conn_type}")
 
-        # Save the wi-fi device object to a variable
-        dev = get_device()
-
         # Connect
         Pnm.NetworkManager.ActivateConnection(get_connection_id(),
-                                              dev,
+                                              get_device(),
                                               "/")
 
         # If not a hotspot, log the connection SSID being attempted
@@ -253,12 +250,9 @@ def list_access_points():
     logger.debug('Fetching Wi-Fi networks.')
 
     try:
-        # Fetch dictionary of devices
-        dev = get_device()
-
         # For each wi-fi connection in range, identify it's details
         compiled_ssids = [analyse_access_point(ap)
-                          for ap in dev.GetAccessPoints()]
+                          for ap in get_device().GetAccessPoints()]
     except Exception:
         logger.exception('Failed listing access points.')
         raise WifiNetworkManagerError

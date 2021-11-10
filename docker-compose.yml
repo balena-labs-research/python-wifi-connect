@@ -17,7 +17,7 @@ services:
       #PWC_AC_PASSWORD: "your-password" # Optional. Must be 8 characters or more.
 
       ## Wi-Fi Interface ##
-      # PWC_INTERFACE: 'wlan0' # When disabled interface is auto detected
+      # PWC_INTERFACE: "wlan0" # When disabled interface is auto detected
 
       ## Enable/Disable LED interaction ##
       PWC_LED: "ON"
