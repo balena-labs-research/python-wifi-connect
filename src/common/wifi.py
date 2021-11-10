@@ -11,6 +11,7 @@ from common.errors import WifiNetworkManagerError
 from common.errors import WifiNoSuitableDevice
 from common.nm_dicts import get_nm_dict
 from common.system import led
+from time import sleep
 
 
 # Import DBus mainloop for NetworkManager use
@@ -176,6 +177,9 @@ def forget(create_new_hotspot=False, all_networks=False):
                         == "802-11-wireless":
                     # Delete the identified connection
                     network_id = connection.GetSettings()["connection"]["id"]
+                    # Add short delay to ensure the endpoint has returned a
+                    # response before disconnecting the user.
+                    sleep(0.5)
                     connection.Delete()
                     logger.debug(f"Deleted connection: {network_id}")
         else:
@@ -183,6 +187,9 @@ def forget(create_new_hotspot=False, all_networks=False):
             # connection_id returns false if it is missing. This can be ignored
             # as this function is often called as a precautionary clean up
             if connection_id:
+                # Add short delay to ensure the endpoint has returned a
+                # response before disconnecting the user.
+                sleep(0.5)
                 connection_id.Delete()
                 logger.debug(f"Deleted connection: {config.ap_name}")
 
