@@ -3,9 +3,9 @@ An API for controlling Wi-Fi connections on [Balena](https://www.balena.io/os/) 
 
 It does not contain a user interface, instead it provides API endpoints to send requests to interact with the device. Any user interface of your choice can be built to interact with the API. If you develop a user interface that is open source, please do let me know so I can provide people links. 
 
-
 ## Example user interface (not included)
-![139806567-9e33980f-b3e7-4ae2-acaa-81e5a4e93365](https://user-images.githubusercontent.com/64841595/141178572-d3e15a19-0ec3-4303-b34a-3d19f5a54a07.jpeg)
+<img width="595" alt="Screenshot 2021-11-10 at 19 24 28" src="https://user-images.githubusercontent.com/64841595/141179620-9358d32f-2a73-426d-91d3-c43ffb8ff316.png">
+
 
 ## Get started
 On launch, the app will detect if you already have a Wi-Fi connection. If you do, it will sleep and wait for a command. If you don’t, it will launch a hotspot and wait for a connection from you. Once connected, you can take further actions using the endpoints listed below.
