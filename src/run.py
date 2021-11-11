@@ -12,6 +12,7 @@ from common.wifi import refresh_networks
 from config import host
 from config import port
 from flask import Flask
+from flask_cors import CORS
 from flask_restful import Api
 from resources.system_routes import system_health_check
 from resources.wifi_routes import wifi_connect
@@ -24,6 +25,9 @@ from waitress import serve
 
 # Create Flask app instance
 app = Flask(__name__)
+
+# Allow CORS
+CORS(app)
 
 # Load Flask-Restful API
 api = Api(app, errors=errors)
