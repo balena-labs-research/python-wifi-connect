@@ -115,11 +115,11 @@ def connect(conn_type=config.type_hotspot,
     forget()
 
     # Get the correct config based on type requested
+    logger.info(f"Adding connection of type {conn_type}")
     conn_dict = get_nm_dict(conn_type, ssid, username, password)
 
     try:
         Pnm.Settings.AddConnection(conn_dict)
-        logger.info(f"Adding connection of type {conn_type}")
 
         # Connect
         Pnm.NetworkManager.ActivateConnection(get_connection_id(),

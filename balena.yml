@@ -1,0 +1,14 @@
+name: Py Wi-Fi Connect
+description: >-
+  An API for controlling Wi-Fi connections on Balena devices.
+version: 0.0.1
+type: sw.application
+assets:
+  repository:
+    type: blob.asset
+    data:
+      url: 'https://github.com/maggie0002/balena-py-wifi-connect'
+  logo:
+    type: blob.asset
+    data:
+      url: 'https://github.com/maggie0002/balena-py-wifi-connect/main/logo.png'
