@@ -27,7 +27,6 @@ class WifiConnectionFailed(Exception):
     pass
 
 
-# Error classes for Flask-Restful
 class WifiDeviceNotFound(Exception):
     pass
 
