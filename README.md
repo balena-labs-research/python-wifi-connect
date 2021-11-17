@@ -3,7 +3,8 @@ An API for controlling Wi-Fi connections on [Balena](https://www.balena.io/os/) 
 
 It does not contain a user interface, instead it provides API endpoints to send requests to interact with the device. Any user interface of your choice can be built to interact with the API. If you develop a user interface that is open source, please do let me know so I can provide people links. 
 
-## Example user interface (maintained on a seperate repo: https://github.com/maggie0002/balena-device-ui)
+## Example user interface
+Maintained on a separate repo: https://github.com/maggie0002/balena-device-ui.
 <img width="595" alt="Screenshot 2021-11-10 at 19 24 28" src="https://user-images.githubusercontent.com/64841595/141179620-9358d32f-2a73-426d-91d3-c43ffb8ff316.png">
 
 
