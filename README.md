@@ -157,12 +157,11 @@ Fetch list of nearby Wi-Fi networks for passing to the connect endpoint.
 ````
 
 ### http://your-device:9090/v1/healthcheck
-Check whether the API is available. Accessing this path will not record anything in the console.
+Check whether the API is available. Accessing this path will not log anything in the console.
 
 #### GET
 
 #### Response status 200
-Requests are returned immediately and then the process is executed. Otherwise users would be disconnected before they were able to receive the returned response. 
 ````
 {
     "message": "ok"
