@@ -3,19 +3,22 @@ import logging
 
 # Create custom logger
 syslog = logging.StreamHandler()
-logger = logging.getLogger('syslog')
+logger = logging.getLogger("syslog")
 logger.addHandler(syslog)
 
 # When in development mode provide details in log of each line of code
 # that is executing
 if config.dev_mode is True:
-    formatter = logging.Formatter('[%(asctime)s] - [%(levelname)s] - '
-                                  '[%(module)s:%(lineno)d] - %(message)s',
-                                  '%Y-%m-%d %H:%M:%S')
+    formatter = logging.Formatter(
+        "[%(asctime)s] - [%(levelname)s] - "
+        "[%(module)s:%(lineno)d] - %(message)s",
+        "%Y-%m-%d %H:%M:%S",
+    )
     logger.setLevel(logging.DEBUG)
 else:
-    formatter = logging.Formatter('[%(asctime)s] - [%(levelname)s] - '
-                                  '%(message)s', '%Y-%m-%d %H:%M:%S')
+    formatter = logging.Formatter(
+        "[%(asctime)s] - [%(levelname)s] - " "%(message)s", "%Y-%m-%d %H:%M:%S"
+    )
     logger.setLevel(logging.INFO)
 
 syslog.setFormatter(formatter)
@@ -50,27 +53,27 @@ class WifiNoSuitableDevice(Exception):
 # Custom error messages for Flask-RESTful to return
 errors = {
     "WifiConnectionFailed": {
-         "message": "System error while establishing Wi-Fi connection.",
-         "status": 500
-     },
+        "message": "System error while establishing Wi-Fi connection.",
+        "status": 500,
+    },
     "WifiDeviceNotFound": {
-         "message": "Requested device not available.",
-         "status": 500
-     },
+        "message": "Requested device not available.",
+        "status": 500,
+    },
     "WifiHotspotStartFailed": {
-         "message": "System error starting hotspot.",
-         "status": 500
-     },
+        "message": "System error starting hotspot.",
+        "status": 500,
+    },
     "WifiInvalidConnectionType": {
-         "message": "Invalid connection type.",
-         "status": 500
-     },
+        "message": "Invalid connection type.",
+        "status": 500,
+    },
     "WifiNetworkManagerError": {
-         "message": "Failed communicating with Network Manager.",
-         "status": 500
-     },
+        "message": "Failed communicating with Network Manager.",
+        "status": 500,
+    },
     "WifiNoSuitableDevice": {
-         "message": "No suitable Wi-Fi device available.",
-         "status": 404
-     }
+        "message": "No suitable Wi-Fi device available.",
+        "status": 404,
+    },
 }

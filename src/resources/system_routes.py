@@ -7,7 +7,7 @@ parent_log_request = serving.WSGIRequestHandler.log_request
 
 # Function for disabling logging on '/'
 def log_request(self, *args, **kwargs):
-    if self.path == '/healthcheck':
+    if self.path == "/healthcheck":
         return
 
     parent_log_request(self, *args, **kwargs)
@@ -16,4 +16,4 @@ def log_request(self, *args, **kwargs):
 class system_health_check(Resource):
     def get(self):
         serving.WSGIRequestHandler.log_request = log_request
-        return {'message': 'ok'}
+        return {"message": "ok"}

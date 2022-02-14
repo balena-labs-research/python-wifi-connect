@@ -7,8 +7,8 @@ assets:
   repository:
     type: blob.asset
     data:
-      url: 'https://github.com/maggie0002/balena-py-wifi-connect'
+      url: "https://github.com/maggie0002/balena-py-wifi-connect"
   logo:
     type: blob.asset
     data:
-      url: 'https://github.com/maggie0002/balena-py-wifi-connect/main/logo.png'
+      url: "https://github.com/maggie0002/balena-py-wifi-connect/main/logo.png"

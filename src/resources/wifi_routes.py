@@ -16,75 +16,74 @@ class wifi_connect(Resource):
 
         # If the device is already connected to a wifi network
         if check_wifi_status():
-            return {'message': 'Device is already connected.'}, 409
+            return {"message": "Device is already connected."}, 409
 
         # Check for any missing strings
         if "conn_type" not in content or "ssid" not in content:
-            return {'message': 'Type or SSID not specified'}, 400
+            return {"message": "Type or SSID not specified"}, 400
 
         # NetworkManager only supports passwords with minimum 8 character
         # https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/768
-        if 'password' in content and len(content['password']) < 8:
-            return {'message': 'Passwords must be 8 characters or longer.'}, \
-                   400
+        if "password" in content and len(content["password"]) < 8:
+            return {
+                "message": "Passwords must be 8 characters or longer."
+            }, 400
 
         # Use threading so the response can be returned before the user is
         # disconnected.
-        wifi_connect_thread = threading.Thread(target=connect,
-                                               kwargs=content)
+        wifi_connect_thread = threading.Thread(target=connect, kwargs=content)
 
         wifi_connect_thread.start()
 
-        return {'message': 'accepted'}, 202
+        return {"message": "accepted"}, 202
 
 
 class wifi_connection_status(Resource):
     def get(self):
-        return {'wifi': check_wifi_status(),
-                'internet': check_internet_status()}
+        return {
+            "wifi": check_wifi_status(),
+            "internet": check_internet_status(),
+        }
 
 
 class wifi_forget(Resource):
     def post(self):
         # If the device is not connected to a wifi network
         if not check_wifi_status():
-            return {'message': 'Device is already disconnected.'}, 409
+            return {"message": "Device is already disconnected."}, 409
 
         # Check the all_networks boolean
-        if (not request.get_json() or
-                'all_networks' not in request.get_json()):
+        if not request.get_json() or "all_networks" not in request.get_json():
             forget_mode = False
         else:
-            forget_mode = request.get_json()['all_networks']
+            forget_mode = request.get_json()["all_networks"]
 
         # Use threading so the response can be returned before the user is
         # disconnected.
-        wifi_forget_thread = threading.Thread(target=forget,
-                                              kwargs={'create_new_hotspot':
-                                                      True,
-                                                      'all_networks':
-                                                      forget_mode})
+        wifi_forget_thread = threading.Thread(
+            target=forget,
+            kwargs={"create_new_hotspot": True, "all_networks": forget_mode},
+        )
 
-        logger.info('Removing connetion...')
+        logger.info("Removing connetion...")
         wifi_forget_thread.start()
 
-        return {'message': 'accepted'}, 202
+        return {"message": "accepted"}, 202
 
 
 class wifi_list_access_points(Resource):
     def get(self):
         ssids, iw_status = list_access_points()
 
-        return {'ssids': ssids, 'iw_compatible': iw_status}
+        return {"ssids": ssids, "iw_compatible": iw_status}
 
 
 class wifi_set_interface(Resource):
     def post(self):
         # Check entry exists
-        if (not request.get_json() or
-                'interface' not in request.get_json()):
-            return {'message': 'Interface value not provided.'}, 500
+        if not request.get_json() or "interface" not in request.get_json():
+            return {"message": "Interface value not provided."}, 500
         else:
-            config.interface = request.get_json()['interface']
+            config.interface = request.get_json()["interface"]
             logger.info(f"Interface changed to {config.interface}")
-            return {'message': 'ok'}, 200
+            return {"message": "ok"}, 200

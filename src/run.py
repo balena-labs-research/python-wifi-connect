@@ -33,18 +33,18 @@ CORS(app)
 api = Api(app, errors=errors)
 
 # Health check routes
-api.add_resource(system_health_check, '/healthcheck')
+api.add_resource(system_health_check, "/healthcheck")
 
 # Wi-Fi routes
-api.add_resource(wifi_connect, '/v1/connect')
-api.add_resource(wifi_connection_status, '/v1/connection_status')
-api.add_resource(wifi_forget, '/v1/forget')
-api.add_resource(wifi_list_access_points, '/v1/list_access_points')
-api.add_resource(wifi_set_interface, '/v1/set_interface')
+api.add_resource(wifi_connect, "/v1/connect")
+api.add_resource(wifi_connection_status, "/v1/connection_status")
+api.add_resource(wifi_forget, "/v1/forget")
+api.add_resource(wifi_list_access_points, "/v1/list_access_points")
+api.add_resource(wifi_set_interface, "/v1/set_interface")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Begin loading program
-    logger.info('Checking for previously configured Wi-Fi connections...')
+    logger.info("Checking for previously configured Wi-Fi connections...")
 
     # Start dnsmasq service for assigning IPs to connected devices
     dnsmasq()
@@ -59,14 +59,14 @@ if __name__ == '__main__':
     # If the Wi-Fi connection or device is already active, do nothing
     if check_wifi_status() or check_device_state():
         led(1)
-        logger.info('A Wi-Fi connection or hotspot is already active.')
-        logger.info('Ready...')
+        logger.info("A Wi-Fi connection or hotspot is already active.")
+        logger.info("Ready...")
     # If the Wi-Fi connection and device are not active, start a hotspot
     else:
         led(0)
         refresh_networks(retries=1)
         if config.auto_connect_kargs:
-            logger.info('Attempting auto-connect...')
+            logger.info("Attempting auto-connect...")
             auto_connect(**config.auto_connect_kargs)
         else:
             connect()

@@ -1,4 +1,4 @@
-version: '2.1'
+version: "2.1"
 
 services:
   py-wifi-connect:
@@ -30,7 +30,7 @@ services:
     network_mode: "host"
     restart: always
     labels:
-      io.balena.features.dbus: '1'
+      io.balena.features.dbus: "1"
     cap_add:
       - NET_ADMIN
     privileged: true # This can be removed if you do not need the LED indicator.
