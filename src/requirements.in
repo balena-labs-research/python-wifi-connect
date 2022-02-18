@@ -1,4 +1,4 @@
 Flask-Cors
 Flask-RESTful
-python-networkmanager
+python-networkmanager==2.1
 waitress
