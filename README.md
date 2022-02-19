@@ -39,7 +39,9 @@ If you would prefer to only allow access from your backend, change the `PWC_HOST
 
 Users will then be unable to access the API `http://your-device:9090/v1/connect`. Your backend container on the device, however, can reach the API using `http://127.0.0.1:9090/v1/connect`. This is useful if your user interface has a login process, and you only want users to be able to interact with Wi-Fi after logging in.
 
-Alternatively, if you would rather have your backend use specified ports instead of the host network, you can change the `PWC_HOST` environment variable to `172.17.0.1` and access the API from `http://172.17.0.1:9090/v1/connect`.
+Alternatively, if you would rather have your backend use specified ports instead of the host network, you can change the `PWC_HOST` environment variable to `172.17.0.1` and access the API from `http://172.17.0.1:9090/v1/connect`. On some devices, the default `172.17.0.1` address can not be guaranteed. You can therefore set `PWC_HOST` to `bridge` and it will detect the default Balena Engine bridge on startup and listen on that IP. You wil then need to identify the IP in your other container in order to communicate. The following command in a shell script will get you the IP:
+
+`ip route | awk '/default / { print $3 }'`
 
 ## Changing the default network interface
 

@@ -14,12 +14,6 @@ from common.system import led
 from time import sleep
 
 
-# Import DBus mainloop for NetworkManager use
-from dbus.mainloop.glib import DBusGMainLoop
-
-DBusGMainLoop(set_as_default=True)
-
-
 def analyse_access_point(ap):
     security = config.type_none
 

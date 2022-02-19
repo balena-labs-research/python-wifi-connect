@@ -13,7 +13,9 @@ else:
     hotspot_password = None
 
 # Set default host.
-if "PWC_HOST" in os.environ:
+if "PWC_HOST" in os.environ and os.environ["PWC_HOST"].lower() == "bridge":
+    host = os.environ["BRIDGE_NETWORK_IP"]
+elif "PWC_HOST" in os.environ:
     host = os.environ["PWC_HOST"]
 else:
     host = "0.0.0.0"

@@ -41,5 +41,5 @@ COPY --from=python-buildstep /root/.local /root/.local
 # Insert application
 COPY src .
 
-# Check for database migrations then launch controller
-CMD ["python3", "run.py"]
+# Run the start script
+CMD ["sh", "start.sh"]

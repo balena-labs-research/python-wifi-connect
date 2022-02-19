@@ -71,4 +71,5 @@ if __name__ == "__main__":
         else:
             connect()
 
+    logger.info(f"Listening on {host} port {port}")
     serve(app, host=host, port=port)
