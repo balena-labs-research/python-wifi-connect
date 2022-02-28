@@ -26,7 +26,7 @@ ENV FLASK_ENV=production
 ENV PATH=/root/.local/bin:$PATH
 
 # Set working directory 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Install dependencies
 RUN apk add --no-cache \

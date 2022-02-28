@@ -1,4 +1,5 @@
 import config
+import dotenv
 import threading
 from common.errors import logger
 from common.wifi import check_internet_status
@@ -6,6 +7,7 @@ from common.wifi import check_wifi_status
 from common.wifi import connect
 from common.wifi import forget
 from common.wifi import list_access_points
+from dotenv import dotenv_values
 from flask import request
 from flask_restful import Resource
 
@@ -76,6 +78,39 @@ class wifi_list_access_points(Resource):
         ssids, iw_status = list_access_points()
 
         return {"ssids": ssids, "iw_compatible": iw_status}
+
+
+class wifi_set_hotspot_password(Resource):
+    def post(self):
+        content = request.get_json()
+
+        if ("password" not in content) or (len(content["password"]) < 8):
+            return {
+                "message": "Passwords must be 8 characters or longer."
+            }, 400
+
+        if not dotenv_values("db/.db"):
+            with open("db/.db", "w") as db:
+                db.write("PWC_HOTSPOT_PASSWORD=" + content["password"])
+        else:
+            dotenv.set_key(
+                "db/.db", "PWC_HOTSPOT_PASSWORD", content["password"]
+            )
+
+        return {"message": "ok"}, 200
+
+
+class wifi_set_hotspot_ssid(Resource):
+    def post(self):
+        content = request.get_json()
+
+        if not dotenv_values("db/.db"):
+            with open("db/.db", "w") as db:
+                db.write("PWC_HOTSPOT_SSID=" + content["ssid"])
+        else:
+            dotenv.set_key("db/.db", "PWC_HOTSPOT_SSID", content["ssid"])
+
+        return {"message": "ok"}, 200
 
 
 class wifi_set_interface(Resource):
