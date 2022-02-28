@@ -189,6 +189,46 @@ Check whether the API is available. Accessing this path will not log anything in
 }
 ```
 
+### http://your-device:9090/v1/set_hotspot_password
+
+Allows setting the hotspot password. Using this endpoint will store the passed string in a file and will override the environment variable password. Ensure the `./db` folder is mounted as a volume for this change to be persistent.
+
+#### POST
+
+```
+{
+    "password": "new-password" // Minimum of 8 characters
+}
+```
+
+#### Response status 200
+
+```
+{
+    "message": "ok"
+}
+```
+
+### http://your-device:9090/v1/set_hotspot_ssid
+
+Allows setting the hotspot SSID. Using this endpoint will store the passed string in a file and will override any environment variable ssid. Ensure the `./db` folder is mounted as a volume for this change to be persistent.
+
+#### POST
+
+```
+{
+    "ssid": "new SSID"
+}
+```
+
+#### Response status 200
+
+```
+{
+    "message": "ok"
+}
+```
+
 ### http://your-device:9090/v1/set_interface
 
 By default the Wi-Fi network interface is auto-detected. If you need to specify a network interface, you can do so using this endpoint.

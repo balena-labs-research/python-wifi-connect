@@ -1,13 +1,25 @@
 import os
+from dotenv import dotenv_values
+
+# Check db directory exists
+if not os.path.exists("db"):
+    os.makedirs("db")
+
+# Import database file
+env_file = dotenv_values("db/.db")
 
 # Set default Wi-Fi SSID.
-if "PWC_HOTSPOT_SSID" in os.environ:
+if "PWC_HOTSPOT_SSID" in env_file:
+    hotspot_ssid = env_file["PWC_HOTSPOT_SSID"]
+elif "PWC_HOTSPOT_SSID" in os.environ:
     hotspot_ssid = os.environ["PWC_HOTSPOT_SSID"]
 else:
     hotspot_ssid = "Py Wi-Fi Connect"
 
 # Set default hotspot password.
-if "PWC_HOTSPOT_PASSWORD" in os.environ:
+if "PWC_HOTSPOT_PASSWORD" in env_file:
+    hotspot_password = env_file["PWC_HOTSPOT_PASSWORD"]
+elif "PWC_HOTSPOT_PASSWORD" in os.environ:
     hotspot_password = os.environ["PWC_HOTSPOT_PASSWORD"]
 else:
     hotspot_password = None

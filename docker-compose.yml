@@ -29,8 +29,13 @@ services:
       dockerfile: Dockerfile.template
     network_mode: "host"
     restart: always
+    volumes:
+      - "py_wifi_connect_db:/app/db" # Optional if not setting the hotspot ssid and password via the API
     labels:
       io.balena.features.dbus: "1"
     cap_add:
       - NET_ADMIN
     privileged: true # This can be removed if you do not need the LED indicator.
+
+volumes:
+  py_wifi_connect_db:

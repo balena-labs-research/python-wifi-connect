@@ -1,3 +1,4 @@
+python-dotenv
 Flask-Cors
 Flask-RESTful
 python-networkmanager==2.1
