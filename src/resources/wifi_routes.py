@@ -6,6 +6,7 @@ from common.wifi import check_internet_status
 from common.wifi import check_wifi_status
 from common.wifi import connect
 from common.wifi import forget
+from common.wifi import get_connection_id
 from common.wifi import list_access_points
 from dotenv import dotenv_values
 from flask import request
@@ -50,12 +51,12 @@ class wifi_connection_status(Resource):
 
 class wifi_forget(Resource):
     def post(self):
-        # If the device is not connected to a wifi network
-        if not check_wifi_status():
-            return {"message": "Device is already disconnected."}, 409
-
         # Check the all_networks boolean
         if not request.get_json() or "all_networks" not in request.get_json():
+            # If the device is not connected to a wifi network
+            if not check_wifi_status():
+                return {"message": "Device is already disconnected."}, 409
+
             forget_mode = False
         else:
             forget_mode = request.get_json()["all_networks"]
@@ -97,6 +98,23 @@ class wifi_set_hotspot_password(Resource):
                 "db/.db", "PWC_HOTSPOT_PASSWORD", content["password"]
             )
 
+        # Set the new SSID to the global var
+        config.hotspot_password = content["password"]
+
+        # Fetch ID of any current connection
+        connection = get_connection_id()
+
+        # If there is a running hotspot, recreate it with the new details
+        if (
+            connection
+            and connection.GetSettings()["802-11-wireless"]["mode"] == "ap"
+        ):
+            wifi_forget_thread = threading.Thread(
+                target=forget,
+                kwargs={"create_new_hotspot": True},
+            )
+            wifi_forget_thread.start()
+
         return {"message": "ok"}, 200
 
 
@@ -109,6 +127,23 @@ class wifi_set_hotspot_ssid(Resource):
                 db.write("PWC_HOTSPOT_SSID=" + content["ssid"])
         else:
             dotenv.set_key("db/.db", "PWC_HOTSPOT_SSID", content["ssid"])
+
+        # Set the new SSID to the global var
+        config.hotspot_ssid = content["ssid"]
+
+        # Fetch ID of any current connection
+        connection = get_connection_id()
+
+        # If there is a running hotspot, recreate it with the new details
+        if (
+            connection
+            and connection.GetSettings()["802-11-wireless"]["mode"] == "ap"
+        ):
+            wifi_forget_thread = threading.Thread(
+                target=forget,
+                kwargs={"create_new_hotspot": True},
+            )
+            wifi_forget_thread.start()
 
         return {"message": "ok"}, 200
 

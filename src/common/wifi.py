@@ -71,7 +71,6 @@ def auto_connect(ssid=None, username=None, password=None):
 
 # Returns True when a connection to a router is made, or the Hotspot is live
 def check_device_state():
-    # Save the wi-fi device object to a variable
     if get_device().State == Pnm.NM_DEVICE_STATE_ACTIVATED:
         return True
     else:
