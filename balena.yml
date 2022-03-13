@@ -12,3 +12,15 @@ assets:
     type: blob.asset
     data:
       url: "https://raw.githubusercontent.com/maggie0002/balena-py-wifi-connect/main/logo.png"
+data:
+  defaultDeviceType: raspberrypi4-64
+  supportedDeviceTypes:
+    - raspberry-pi
+    - raspberry-pi2
+    - raspberrypi3
+    - raspberrypi3-64
+    - raspberrypi4-64
+    - fincm3
+    - raspberrypi400-64
+    - intel-nuc
+    - genericx86-64-ext
