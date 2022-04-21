@@ -11,7 +11,7 @@ services:
       PWC_HOTSPOT_SSID: "Py Wi-Fi Connect"
       #PWC_HOTSPOT_PASSWORD: "my-hotspot-password" # Optional. Must be 8 characters or more.
 
-      ## Try to automatically set up a Wi-Fi network on first boot ##
+      ## Try to automatically connect to a Wi-Fi network on first boot ##
       #PWC_AC_SSID: "network-name" # Compulsory for this feature
       #PWC_AC_USERNAME: "username" # Optional
       #PWC_AC_PASSWORD: "your-password" # Optional. Must be 8 characters or more.
