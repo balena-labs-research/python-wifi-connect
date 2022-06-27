@@ -26,7 +26,7 @@ services:
       DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/host/run/dbus/system_bus_socket"
     build:
       context: .
-      dockerfile: Dockerfile.template
+      dockerfile: Dockerfile
     network_mode: "host"
     restart: always
     volumes:
