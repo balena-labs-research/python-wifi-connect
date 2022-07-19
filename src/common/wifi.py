@@ -1,5 +1,6 @@
 import config
 import NetworkManager as Pnm  # Python NetworkManager
+import os
 import socket
 import subprocess
 import time
@@ -94,7 +95,9 @@ def check_internet_status(host="8.8.8.8", port=53, timeout=5):
 def check_wifi_status():
     try:
         run = subprocess.run(
-            ["iw", "dev", "wlan0", "link"], capture_output=True, text=True
+            ["iw", "dev", config.interface, "link"],
+            capture_output=True,
+            text=True,
         ).stdout.rstrip()
     except Exception:
         logger.exception(
@@ -131,7 +134,7 @@ def connect(
         if conn_type != config.type_hotspot:
             logger.info(f"Attempting connection to {ssid}")
 
-        # Wait for ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+        # Wait for ADDRCONF(NETDEV_CHANGE): link becomes ready
         loop_count = 0
         while not check_device_state():
             time.sleep(1)
@@ -224,8 +227,8 @@ def get_connection_id():
 
 def get_device():
     # Configured interface variable takes precedent.
-    if config.interface.lower() != config.auto_interface:
-        logger.debug(f"Interface {config.interface} selected.")
+    if "PWC_INTERFACE" in os.environ:
+        logger.debug(f"Interface {os.environ['PWC_INTERFACE']} selected.")
         for device in Pnm.NetworkManager.GetDevices():
             if device.DeviceType != Pnm.NM_DEVICE_TYPE_WIFI:
                 continue
@@ -233,7 +236,7 @@ def get_device():
             # against the one configured in config.interface
             if (
                 device.Udi[device.Udi.rfind("/") + 1 :].lower()
-                == config.interface.lower()
+                == os.environ["PWC_INTERFACE"]
             ):
                 return device
 
@@ -302,7 +305,7 @@ def refresh_networks(retries=5):
     while run < max_runs:
         try:
             time.sleep(3)
-            subprocess.check_output(["iw", "dev", "wlan0", "scan"])
+            subprocess.check_output(["iw", "dev", config.interface, "scan"])
         except subprocess.CalledProcessError:
             logger.warning("IW resource busy. Retrying...")
             continue
@@ -316,7 +319,7 @@ def refresh_networks(retries=5):
             run += 1
 
     logger.warning(
-        "IW is not accessible. This can happen on some devices "
+        "IW is unable to complete the request. This can happen on some devices "
         "and is usually nothing to worry about."
     )
     return False

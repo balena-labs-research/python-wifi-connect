@@ -45,19 +45,15 @@ Alternatively, if you would rather have your backend use specified ports instead
 
 ## Changing the default network interface
 
-By default, the first available Wi-Fi network interface available will be used. For the vast majority of cases there is only one Wi-Fi network interface (`wlan0`) and therefore this is no issue. Similarly, if you plug in a Wi-Fi dongle to a device without its own built-in Wi-Fi, the Wi-Fi dongle will be used by default.
+By default, the first available Wi-Fi network interface available will be used. For the vast majority of cases there is only one Wi-Fi network interface and therefore this is no issue. Similarly, if you plug in a Wi-Fi dongle to a device without its own built-in Wi-Fi, the Wi-Fi dongle will be used by default.
 
-If however, you have a device with built in Wi-Fi and a Wi-Fi dongle, you will have a device with two network interfaces (usually `wlan0` and `wlan1`). For these instances, or on other occasions where you have a complex network interface setup, you can specify which network interface you would like Py Wi-Fi Connect to use by setting the environment variable shown in the `docker-compose.yml` file:
+If however, you have a device with built in Wi-Fi and a Wi-Fi dongle, you will have a device with two network interfaces. For these instances, or on other occasions where you have a complex network interface setup, you can specify which network interface you would like Py Wi-Fi Connect to use by setting the environment variable shown in the `docker-compose.yml` file:
 
 ```
 PWC_INTERFACE: "wlan0"
 ```
 
-To allow for automatic detection, set the variable to `auto` or remove the variable from your `docker-compose.yml` file:
-
-```
-PWC_INTERFACE: "auto"
-```
+To allow for automatic detection, remove the variable from your `docker-compose.yml` file.
 
 This setting can also be controlled using the `/set_interface` endpoint.
 
@@ -233,9 +229,7 @@ Allows setting the hotspot SSID. Using this endpoint will store the passed strin
 
 By default the Wi-Fi network interface is auto-detected. If you need to specify a network interface, you can do so using this endpoint.
 
-To set back to auto-detection, pass `auto` as the value.
-
-Changing the setting will only last until the next restart of the container, when it will resort back to the default setting set by the environment variable in the container or `auto` if there is no environment variable in the container.
+Changing the setting will only last until the next restart of the container, when it will resort back to the setting set by the environment variable in the container or detect the interface autocratically if there is no environment variable in the container.
 
 #### POST
 

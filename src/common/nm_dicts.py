@@ -16,7 +16,7 @@ def get_nm_dict(conn_type, ssid, username, password):
             "connection": {
                 "autoconnect": False,
                 "id": config.ap_name,
-                "interface-name": "wlan0",
+                "interface-name": config.interface,
                 "type": "802-11-wireless",
                 "uuid": str(uuid.uuid4()),
             },

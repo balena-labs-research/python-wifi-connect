@@ -1,4 +1,5 @@
 import config
+import os
 import time
 from common.errors import errors
 from common.errors import logger
@@ -8,6 +9,7 @@ from common.wifi import auto_connect
 from common.wifi import check_device_state
 from common.wifi import check_wifi_status
 from common.wifi import connect
+from common.wifi import get_device
 from common.wifi import refresh_networks
 from config import host
 from config import port
@@ -24,6 +26,9 @@ from resources.wifi_routes import wifi_set_hotspot_ssid
 from resources.wifi_routes import wifi_set_interface
 from waitress import serve
 
+# Set default interface
+device = get_device()
+config.interface = device.Udi[device.Udi.rfind("/") + 1 :].lower()
 
 # Create Flask app instance
 app = Flask(__name__)
@@ -44,8 +49,8 @@ dnsmasq()
 time.sleep(10)
 
 # Log interface status
-if config.interface.lower() != config.auto_interface:
-    logger.info(f"Interface set to {config.interface}")
+if "PWC_INTERFACE" in os.environ:
+    logger.info(f"Interface set to {os.environ['PWC_INTERFACE']}")
 
 # If the Wi-Fi connection or device is already active, do nothing
 if check_wifi_status() or check_device_state():

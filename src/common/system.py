@@ -11,7 +11,7 @@ def dnsmasq():
         f"--address=/#/{config.DEFAULT_GATEWAY}",
         f"--dhcp-range={config.DEFAULT_DHCP_RANGE}",
         f"--dhcp-option=option:router,{config.DEFAULT_GATEWAY}",
-        f"--interface={config.DEFAULT_INTERFACE}",
+        f"--interface={config.interface}",
         "--keep-in-foreground",
         "--bind-dynamic",
         "--except-interface=lo",
