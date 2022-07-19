@@ -236,8 +236,9 @@ def get_device():
                 == config.interface.lower()
             ):
                 return device
-            else:
-                raise WifiDeviceNotFound
+
+        # If device was not found during the loop
+        raise WifiDeviceNotFound
 
     # Fetch last Wi-Fi interface found
     devices = dict(
