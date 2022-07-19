@@ -1,10 +1,9 @@
 name: Deploy to BCR
 
 on:
- pull_request:
-    types: [opened, synchronize, closed]
-    branches:
-      - main
+  push:
+    tags:
+      - "*"
 
 jobs:
   deploy-to-bcr:
