@@ -229,7 +229,7 @@ Allows setting the hotspot SSID. Using this endpoint will store the passed strin
 
 By default the Wi-Fi network interface is auto-detected. If you need to specify a network interface, you can do so using this endpoint.
 
-Changing the setting will only last until the next restart of the container, when it will resort back to the setting set by the environment variable in the container or detect the interface autocratically if there is no environment variable in the container.
+Changing the setting will only last until the next restart of the container, when it will resort back to the setting set by the environment variable in the container or detect the interface automatically if there is no environment variable in the container.
 
 #### POST
 
