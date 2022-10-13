@@ -8,7 +8,7 @@ services:
       PWC_PORT: 9090
 
       ## Hotspot details ##
-      PWC_HOTSPOT_SSID: "Py Wi-Fi Connect"
+      PWC_HOTSPOT_SSID: "Python Wi-Fi Connect"
       #PWC_HOTSPOT_PASSWORD: "my-hotspot-password" # Optional. Must be 8 characters or more.
 
       ## Try to automatically connect to a Wi-Fi network on first boot ##

@@ -13,7 +13,7 @@ Maintained on a separate repo: https://github.com/balena-labs-research/starter-I
 
 On launch, the app will detect if you already have a Wi-Fi connection. If you do, it will sleep and wait for a command. If you don’t, it will launch a hotspot and wait for a connection from you. Once connected, you can take further actions using the endpoints listed below.
 
-By default, the Wi-Fi SSID is: `Py Wi-Fi Connect`
+By default, the Wi-Fi SSID is: `Python Wi-Fi Connect`
 
 You can set your own default Wi-Fi SSID and a Wi-Fi password for your hotspot using the environment variables in the docker-compose.yml file.
 
@@ -47,7 +47,7 @@ Alternatively, if you would rather have your backend use specified ports instead
 
 By default, the first available Wi-Fi network interface available will be used. For the vast majority of cases there is only one Wi-Fi network interface and therefore this is no issue. Similarly, if you plug in a Wi-Fi dongle to a device without its own built-in Wi-Fi, the Wi-Fi dongle will be used by default.
 
-If however, you have a device with built in Wi-Fi and a Wi-Fi dongle, you will have a device with two network interfaces. For these instances, or on other occasions where you have a complex network interface setup, you can specify which network interface you would like Py Wi-Fi Connect to use by setting the environment variable shown in the `docker-compose.yml` file:
+If however, you have a device with built in Wi-Fi and a Wi-Fi dongle, you will have a device with two network interfaces. For these instances, or on other occasions where you have a complex network interface setup, you can specify which network interface you would like Python Wi-Fi Connect to use by setting the environment variable shown in the `docker-compose.yml` file:
 
 ```
 PWC_INTERFACE: "wlan0"

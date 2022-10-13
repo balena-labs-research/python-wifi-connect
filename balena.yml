@@ -1,4 +1,4 @@
-name: Py Wi-Fi Connect
+name: Python Wi-Fi Connect
 description: >-
   An API for controlling Wi-Fi connections on Balena devices.
 version: 0.0.1

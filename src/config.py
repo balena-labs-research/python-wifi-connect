@@ -23,7 +23,7 @@ if "PWC_HOTSPOT_SSID" in env_file:
 elif "PWC_HOTSPOT_SSID" in os.environ:
     hotspot_ssid = os.environ["PWC_HOTSPOT_SSID"]
 else:
-    hotspot_ssid = "Py Wi-Fi Connect"
+    hotspot_ssid = "Python Wi-Fi Connect"
 
 # Set default hotspot password.
 if "PWC_HOTSPOT_PASSWORD" in env_file:
@@ -59,7 +59,7 @@ else:
     auto_connect_kargs = False
 
 # Default access point name. No need to change these under usual operation as
-# they are for use inside the app only. PWC is acronym for 'Py Wi-Fi Connect'.
+# they are for use inside the app only. PWC is acronym for 'Python Wi-Fi Connect'.
 ap_name = "PWC"
 
 # dnsmasq variables
