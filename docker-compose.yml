@@ -1,7 +1,7 @@
 version: "2.1"
 
 services:
-  py-wifi-connect:
+  python-wifi-connect:
     environment:
       ## Listening IP and port ##
       PWC_HOST: "0.0.0.0"

@@ -110,7 +110,7 @@ Check whether your device is connected to a Wi-Fi hotspot and whether there is i
 
 Disconnect from an access point and forget the connection so it will not automatically reconnect on next launch of your device.
 
-When passing `"all_networks": false` this endpoint will only touch Wi-Fi connections set up using this app. If you pass `"all_networks": true` it will remove all Wi-Fi connections from the device. This is useful if you have set up a Wi-Fi connection with another app and need to clear out connections to allow Py-WiFi-Connect to manage connections.
+When passing `"all_networks": false` this endpoint will only touch Wi-Fi connections set up using this app. If you pass `"all_networks": true` it will remove all Wi-Fi connections from the device. This is useful if you have set up a Wi-Fi connection with another app and need to clear out connections to allow Python-WiFi-Connect to manage connections.
 
 #### POST
 
