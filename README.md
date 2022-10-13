@@ -6,7 +6,7 @@ It does not contain a user interface, instead it provides API endpoints to send 
 
 ## Example user interface
 
-Maintained on a separate repo: https://github.com/maggie0002/balena-device-ui.
+Maintained on a separate repo: https://github.com/balena-labs-research/starter-Interface.
 <img width="595" alt="Screenshot 2021-11-10 at 19 24 28" src="https://user-images.githubusercontent.com/64841595/141179620-9358d32f-2a73-426d-91d3-c43ffb8ff316.png">
 
 ## Get started

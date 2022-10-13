@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: maggie0002/py-wifi-connect
+  IMAGE_NAME: balena-labs-research/py-wifi-connect
 
 jobs:
   build-and-push-image:
