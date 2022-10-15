@@ -11,11 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Turnstyle
-        uses: softprops/turnstyle@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Deploy to Balena
         uses: balena-io/deploy-to-balena-action@master
         id: build
