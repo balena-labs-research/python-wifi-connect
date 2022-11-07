@@ -9,11 +9,16 @@ jobs:
   deploy-to-bcr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Update balena.yml
+        uses: balena-io-experimental/balena.yml-action@main
+        with:
+          sync_readme: true
+          sync_tag: true
 
       - name: Deploy to Balena
         uses: balena-io/deploy-to-balena-action@master
-        id: build
         with:
           balena_token: ${{ secrets.BALENA_TOKEN }}
           fleet: maggie0002/python-wifi-connect
