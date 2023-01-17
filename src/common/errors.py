@@ -46,10 +46,6 @@ class WifiNetworkManagerError(Exception):
     pass
 
 
-class WifiNoSuitableDevice(Exception):
-    pass
-
-
 # Custom error messages for Flask-RESTful to return
 errors = {
     "WifiConnectionFailed": {
@@ -71,9 +67,5 @@ errors = {
     "WifiNetworkManagerError": {
         "message": "Failed communicating with Network Manager.",
         "status": 500,
-    },
-    "WifiNoSuitableDevice": {
-        "message": "No suitable Wi-Fi device available.",
-        "status": 404,
     },
 }

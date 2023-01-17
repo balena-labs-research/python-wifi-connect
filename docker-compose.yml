@@ -28,7 +28,7 @@ services:
       context: .
       dockerfile: Dockerfile
     network_mode: "host"
-    restart: always
+    restart: on-failure
     volumes:
       - "py_wifi_connect_db:/app/db" # Optional if not setting the hotspot ssid and password via the API
     labels:

@@ -3,13 +3,13 @@ import NetworkManager as Pnm  # Python NetworkManager
 import os
 import socket
 import subprocess
+import sys
 import time
 from common.errors import logger
 from common.errors import WifiConnectionFailed
 from common.errors import WifiDeviceNotFound
 from common.errors import WifiHotspotStartFailed
 from common.errors import WifiNetworkManagerError
-from common.errors import WifiNoSuitableDevice
 from common.nm_dicts import get_nm_dict
 from common.system import led
 from time import sleep
@@ -251,8 +251,8 @@ def get_device():
     if Pnm.NM_DEVICE_TYPE_WIFI in devices:
         return devices[Pnm.NM_DEVICE_TYPE_WIFI]
     else:
-        logger.error("No suitable or available device found.")
-        raise WifiNoSuitableDevice
+        logger.error("No suitable or available device found. Exiting.")
+        sys.exit(0)
 
 
 def list_access_points():
