@@ -14,6 +14,7 @@ RUN apk add --no-cache \
 COPY src/requirements.txt /tmp/
 
 # Install packages into a directory
+RUN pip install wheel --no-cache-dir
 RUN pip install --user -r /tmp/requirements.txt --no-cache-dir
 
 
