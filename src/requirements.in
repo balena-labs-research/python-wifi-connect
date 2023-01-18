@@ -1,5 +1,5 @@
-python-dotenv
+git+https://github.com/balena-io-experimental/python-networkmanager
 Flask-Cors
 Flask-RESTful
-python-networkmanager==2.1
+python-dotenv
 waitress

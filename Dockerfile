@@ -8,6 +8,7 @@ RUN apk add --no-cache \
   build-base \
   dbus-dev \
   dbus-libs \
+  git \
   glib-dev
 
 # Copy Python requirements file

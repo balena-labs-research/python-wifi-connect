@@ -251,7 +251,7 @@ def get_device():
     if Pnm.NM_DEVICE_TYPE_WIFI in devices:
         return devices[Pnm.NM_DEVICE_TYPE_WIFI]
     else:
-        logger.error("No suitable or available device found. Exiting.")
+        logger.error("No suitable or available WiFi device found. Exiting.")
         sys.exit(0)
 
 
